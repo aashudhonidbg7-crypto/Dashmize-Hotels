@@ -1,0 +1,2830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Hotel Management Portal</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root{ --brand:#2563eb; --brand-light:#eaf1ff; --bg:#f6f8fc; --shadow:0 6px 24px rgba(20,30,60,0.06); }
+  *{box-sizing:border-box;}
+  body{background:var(--bg); font-family:'Segoe UI',system-ui,sans-serif; color:#1a2b4a; margin:0;}
+  .auth-wrap{height:100vh; display:flex;}
+  .auth-left{ flex:1; position:relative; padding:44px; overflow:hidden; background:linear-gradient(135deg,#eef1fb 0%,#e3e9fb 60%,#dbe3fb 100%); }
+  .illus-badge-row{display:flex; align-items:center; gap:12px; margin-bottom:40px;}
+  .illus-icon{width:56px; height:56px; border-radius:16px; background:var(--brand); display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px;}
+  .illus-badge-row .name{font-size:22px; font-weight:700; color:#1a2b4a;}
+  .auth-left h1{font-size:32px; font-weight:700; line-height:1.3; max-width:480px; color:#1a2b4a;}
+  .feature-list-flat{margin-top:24px;}
+  .feature-list-flat div{display:flex; align-items:center; gap:12px; margin-bottom:14px; font-size:15px; color:#374151;}
+  .feature-list-flat .chk{width:22px; height:22px; border-radius:6px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;}
+  .illus-wrap{position:relative; width:230px; margin:50px auto 0;}
+  .illus-top-icon{position:absolute; top:-16px; left:50%; transform:translateX(-50%); width:36px; height:36px; background:var(--brand); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; z-index:2;}
+  .auth-right{width:480px; display:flex; align-items:center; justify-content:center; background:#fff;}
+  .auth-form-box{width:360px;}
+  .auth-form-box h3{font-weight:700; margin-bottom:4px;}
+  .auth-form-box .sub{color:#6b7684; margin-bottom:26px; font-size:14px;}
+  .auth-toggle-link{color:var(--brand); text-decoration:none; font-weight:600;}
+  @media(max-width:900px){ .auth-left{display:none;} .auth-right{width:100%;} }
+  .sidebar{width:230px; height:100vh; position:fixed; background:#fff; border-right:1px solid #eef1f6; padding:0 14px 20px; display:flex; flex-direction:column; overflow-y:auto;}
+  .sidebar-brand-block{padding:20px 6px 16px; border-bottom:1px solid #f1f3f8; margin-bottom:14px;}
+  .sidebar-brand-block .biz-icon{width:38px; height:38px; border-radius:10px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:8px;}
+  .sidebar-brand-block .biz-name{font-weight:700; font-size:16px; line-height:1.3; color:#1a2b4a; word-break:break-word;}
+  .sidebar-brand-block .biz-tag{font-size:10px; color:#9aa3af; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;}
+  .nav-link{color:#6b7684; font-weight:500; border-radius:10px; padding:10px 12px; margin-bottom:3px; display:flex; gap:10px; font-size:14px; cursor:pointer;}
+  .nav-link.active,.nav-link:hover{background:var(--brand-light); color:var(--brand);}
+  .sidebar-footer{margin-top:auto; text-align:center; padding-top:12px; border-top:1px solid #f1f3f8;}
+  .sidebar-footer img{max-width:110px; opacity:0.92;}
+  .sidebar-footer .pw{font-size:10px; color:#9aa3af; margin-top:4px;}
+  .main{margin-left:230px; padding:24px 30px;}
+  .topbar-row{display:flex; justify-content:flex-end; margin-bottom:16px;}
+  .user-menu-btn{display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #e3e8f0; padding:7px 14px 7px 7px; border-radius:30px; box-shadow:var(--shadow); cursor:pointer;}
+  .user-menu-avatar{width:30px; height:30px; border-radius:50%; background:var(--brand-light); color:var(--brand); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;}
+  .user-menu-name{font-weight:600; font-size:13px; color:#1a2b4a;}
+  .user-dropdown-menu{min-width:220px; padding:10px;}
+  .user-dropdown-menu .ud-name{font-weight:700; font-size:14px;}
+  .user-dropdown-menu .ud-email{font-size:12px; color:#6b7684; margin-bottom:8px; word-break:break-all;}
+  .page{display:none;} .page.active{display:block;}
+  .panel{background:#fff; border-radius:16px; box-shadow:var(--shadow); padding:20px; margin-bottom:18px;}
+  .kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px;}
+  .kpi-card{background:#fff; border-radius:14px; box-shadow:var(--shadow); padding:18px; border-left:4px solid #ccc;}
+  .kpi-card .label{color:#6b7684; font-size:12px;}
+  .kpi-card .value{font-size:24px; font-weight:700;}
+  .kpi-card .icon{width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-size:16px;}
+  .kpi-card.k-teal{border-left-color:#0d9488;} .kpi-card.k-teal .icon{background:#ccfbf1;color:#0d9488;}
+  .kpi-card.k-blue{border-left-color:#2563eb;} .kpi-card.k-blue .icon{background:#dbeafe;color:#2563eb;}
+  .kpi-card.k-green{border-left-color:#16a34a;} .kpi-card.k-green .icon{background:#dcfce7;color:#16a34a;}
+  .kpi-card.k-coral{border-left-color:#f97316;} .kpi-card.k-coral .icon{background:#ffedd5;color:#c2410c;}
+  .kpi-card.k-purple{border-left-color:#7c3aed;} .kpi-card.k-purple .icon{background:#ede9fe;color:#7c3aed;}
+  .kpi-card.k-amber{border-left-color:#d97706;} .kpi-card.k-amber .icon{background:#fef3c7;color:#b45309;}
+  .kpi-card.k-pink{border-left-color:#db2777;} .kpi-card.k-pink .icon{background:#fce7f3;color:#db2777;}
+  .kpi-card.k-gray{border-left-color:#475569;} .kpi-card.k-gray .icon{background:#e2e8f0;color:#334155;}
+  .btn-brand{background:var(--brand); color:#fff; border:none; border-radius:10px; padding:9px 18px;}
+  .btn-icon-gear{background:#fff; border:1px solid #e3e8f0; border-radius:10px; padding:9px 14px; color:#475569;}
+  .room-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px;}
+  .room-card{background:#fff; border-radius:12px; box-shadow:var(--shadow); padding:14px; border-top:4px solid #ccc; cursor:pointer; position:relative;}
+  .room-card.vacant{border-top-color:#16a34a;} .room-card.occupied{border-top-color:#2563eb;}
+  .room-card.cleaning{border-top-color:#f59e0b;} .room-card.maintenance{border-top-color:#dc2626;}
+  .status-badge{font-size:10px; padding:3px 8px; border-radius:10px; font-weight:600; text-transform:capitalize;}
+  .status-badge.vacant{background:#dcfce7; color:#16a34a;} .status-badge.occupied{background:#dbeafe; color:#2563eb;}
+  .status-badge.cleaning{background:#fef3c7; color:#b45309;} .status-badge.maintenance{background:#fee2e2; color:#dc2626;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{background:#f8fafc; color:#6b7684; text-align:left; padding:10px 12px;}
+  td{padding:10px 12px; border-top:1px solid #f1f3f8;}
+  .status-pill{font-size:11px; padding:3px 10px; border-radius:12px; font-weight:600; text-transform:capitalize;}
+  .status-pill.confirmed{background:#dbeafe; color:#2563eb;} .status-pill.checked_in{background:#dcfce7; color:#16a34a;}
+  .status-pill.checked_out{background:#e5e7eb; color:#374151;} .status-pill.cancelled{background:#fee2e2; color:#dc2626;}
+  #toast{position:fixed; top:20px; right:20px; z-index:9999;}
+  .bill-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #f1f3f8; font-size:14px;}
+  .bill-row.total{font-weight:700; font-size:16px; border-top:2px solid #eef1f6; border-bottom:none; padding-top:10px;}
+  .invoice-print{display:none;}
+  .filter-bar{display:flex; gap:8px; flex-wrap:wrap; align-items:end; margin-bottom:14px; background:#fff; border-radius:12px; box-shadow:var(--shadow); padding:12px;}
+  .filter-bar .fld{display:flex; flex-direction:column; gap:2px;}
+  .filter-bar label{font-size:11px; color:#6b7684;}
+  .fnb-row{display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #f1f3f8; font-size:12px;}
+  .fnb-row .note{color:#9aa3af; font-style:italic;}
+  .search-box{max-width:280px;}
+  .no-caret::after{display:none;}
+  .inv-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;}
+  .inv-title{font-size:20px; font-weight:700; color:#2563eb;}
+  .inv-table{width:100%; border-collapse:collapse; font-size:13px;}
+  .inv-table th{background:#f0f4fc; padding:8px; border:1px solid #d9e2f3;}
+  .inv-table td{padding:8px; border:1px solid #d9e2f3;}
+  .sign-box{margin-top:50px; text-align:right;}
+  .sign-line{border-top:1px solid #444; width:200px; margin-left:auto; margin-top:40px; padding-top:4px; font-size:12px;}
+  .role-pick{border:1px solid #e3e8f0; border-radius:12px; padding:14px; cursor:pointer;}
+  .role-pick.selected{border-color:var(--brand); background:var(--brand-light);}
+  .role-pick b{color:#1a2b4a;}
+  .perm-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f3f8;}
+  .perm-row .mod-name{font-weight:600; font-size:14px;}
+  .perm-check{display:flex; gap:14px; font-size:13px; flex-wrap:wrap;}
+  .perm-check label{display:flex; align-items:center; gap:4px; cursor:pointer;}
+  .ai-box{background:#f8fafc; border-radius:12px; padding:14px; min-height:60px; font-size:13px; white-space:pre-wrap;}
+  .exp-tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;}
+  .exp-tabs button{border-radius:10px; font-size:13px; padding:8px 16px; border:1px solid #e3e8f0; background:#fff; color:#475569;}
+  .exp-tabs button.active{background:var(--brand-light); color:var(--brand); border-color:var(--brand-light);}
+  .exp-badge{font-size:11px; padding:3px 10px; border-radius:12px; font-weight:600;}
+  .exp-draft{background:#e5e7eb; color:#374151;}
+  .exp-pending{background:#fef3c7; color:#b45309;}
+  .exp-approved{background:#dcfce7; color:#16a34a;}
+  .exp-rejected{background:#fee2e2; color:#dc2626;}
+  .exp-sentback{background:#ede9fe; color:#7c3aed;}
+  .exp-paid{background:#dbeafe; color:#2563eb;}
+  .vendor-row-picker{display:flex; gap:8px; align-items:center;}
+  .subtab-body{display:none;} .subtab-body.active{display:block;}
+  @media print{
+    body *{visibility:hidden;}
+    .invoice-print, .invoice-print *{visibility:visible;}
+    .invoice-print{display:block; position:absolute; top:0; left:0; width:100%; padding:20px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="auth-wrap">
+  <div class="auth-left">
+    <div class="illus-badge-row">
+      <div class="illus-icon"><i class="bi bi-building"></i></div>
+      <div class="name" id="illusBadge">Hotel Portal by Dashmize</div>
+    </div>
+    <h1>Run every part of your hotel from one clean system.</h1>
+    <div class="feature-list-flat">
+      <div><span class="chk"><i class="bi bi-check-lg"></i></span> Guest registration & booking management</div>
+      <div><span class="chk"><i class="bi bi-check-lg"></i></span> Room & housekeeping status tracking</div>
+      <div><span class="chk"><i class="bi bi-check-lg"></i></span> GST-ready billing & invoicing</div>
+      <div><span class="chk"><i class="bi bi-check-lg"></i></span> Expense approvals & vendor management</div>
+      <div><span class="chk"><i class="bi bi-check-lg"></i></span> UPI QR & payment gateway collection</div>
+      <div><span class="chk"><i class="bi bi-check-lg"></i></span> Role-based staff access</div>
+    </div>
+    <div class="illus-wrap">
+      <div class="illus-top-icon"><i class="bi bi-key-fill"></i></div>
+      <svg viewBox="0 0 230 150" width="230" height="150">
+        <circle cx="190" cy="40" r="34" fill="#c7d2fe" opacity="0.5"/>
+        <rect x="15" y="35" width="200" height="105" rx="8" fill="#c7d2fe"/>
+        <rect x="30" y="55" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="65" y="55" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="100" y="55" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="135" y="55" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="170" y="55" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="30" y="90" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="65" y="90" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="135" y="90" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="170" y="90" width="24" height="24" rx="4" fill="#ffffff"/>
+        <rect x="98" y="90" width="34" height="50" rx="4" fill="#4338ca"/>
+      </svg>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form-box">
+      <div id="loginFormBox">
+        <h3>Welcome back</h3>
+        <div class="sub">Sign in to your hotel dashboard</div>
+        <div id="loginError" class="alert alert-danger py-2" style="display:none;"></div>
+        <div class="mb-3"><label class="form-label">Username or Email</label><input id="loginUser" class="form-control" placeholder="owner"></div>
+        <div class="mb-3"><label class="form-label">Password</label><input id="loginPass" type="password" class="form-control" placeholder="owner123"></div>
+        <button class="btn-brand w-100 mb-2" onclick="doLogin()">Log in</button>
+        <div class="d-flex justify-content-between">
+          <span class="small">No account? <a href="#" class="auth-toggle-link" onclick="showSignup(); return false;">Sign up</a></span>
+          <a href="#" class="small auth-toggle-link" onclick="openForgotPassword(); return false;">Forgot password?</a>
+        </div>
+        <div class="text-muted small mt-3">Default: <b>owner</b> / <b>owner123</b></div>
+      </div>
+      <div id="signupFormBox" style="display:none;">
+        <h3>Create your account</h3>
+        <div class="sub">First sign-up sets your hotel's name across the portal</div>
+        <div id="signupError" class="alert alert-danger py-2" style="display:none;"></div>
+        <div class="mb-3"><label class="form-label">Hotel / Business Legal Name *</label><input id="su_legalname" class="form-control" placeholder="e.g. GR Lake View Hospitality Pvt Ltd"></div>
+        <div class="mb-3"><label class="form-label">Your Full Name *</label><input id="su_name" class="form-control"></div>
+        <div class="mb-3"><label class="form-label">Email *</label><input id="su_email" type="email" class="form-control"></div>
+        <div class="mb-3"><label class="form-label">Password *</label><input id="su_pass" type="password" class="form-control"></div>
+        <div class="mb-3"><label class="form-label">Confirm Password *</label><input id="su_pass2" type="password" class="form-control"></div>
+        <button class="btn-brand w-100 mb-2" onclick="doSignup()">Sign up</button>
+        <div class="small">Already have an account? <a href="#" class="auth-toggle-link" onclick="showLogin(); return false;">Log in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="appShell" style="display:none;">
+  <div class="sidebar">
+    <div class="sidebar-brand-block">
+      <div class="biz-icon"><i class="bi bi-building"></i></div>
+      <div class="biz-name" id="sidebarBrand">Your Hotel</div>
+      <div class="biz-tag">Hotel Management Portal</div>
+    </div>
+    <div class="nav-link active" data-page="dashboard" data-module="dashboard" onclick="showPage('dashboard')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</div>
+    <div class="nav-link" data-page="rooms" data-module="rooms" onclick="showPage('rooms')"><i class="bi bi-door-open"></i> Rooms</div>
+    <div class="nav-link" data-page="guests" data-module="guests" onclick="showPage('guests')"><i class="bi bi-people"></i> Guests</div>
+    <div class="nav-link" data-page="bookings" data-module="bookings" onclick="showPage('bookings')"><i class="bi bi-calendar-check"></i> Bookings</div>
+    <div class="nav-link" data-page="billing" data-module="billing" onclick="showPage('billing')"><i class="bi bi-receipt"></i> Billing</div>
+    <div class="nav-link" data-page="expenses" data-module="expenses" onclick="showPage('expenses')"><i class="bi bi-wallet2"></i> Expenses</div>
+    <div class="nav-link" data-page="reports" data-module="reports" onclick="showPage('reports')"><i class="bi bi-bar-chart-line"></i> Reports</div>
+    <div class="nav-link" onclick="new bootstrap.Modal(document.getElementById('adminModal')).show()"><i class="bi bi-person-gear"></i> Administration</div>
+    <div class="sidebar-footer">
+      <img src="logo.png" alt="Dashmize" onerror="this.style.display='none'">
+      <div class="pw">Powered by Dashmize</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar-row">
+      <div class="dropdown">
+        <div class="user-menu-btn" data-bs-toggle="dropdown">
+          <div class="user-menu-avatar" id="userMenuAvatar">U</div>
+          <div class="user-menu-name" id="userMenuName">User</div>
+          <i class="bi bi-chevron-down small text-muted"></i>
+        </div>
+        <div class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+          <div class="ud-name" id="udName">User Name</div>
+          <div class="ud-email" id="udEmail">user@example.com</div>
+          <hr class="my-1">
+          <button class="dropdown-item text-danger" onclick="doLogout()"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-dashboard" class="page active">
+      <h4 class="fw-bold mb-3">Owner Dashboard</h4>
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="row">
+        <div class="col-md-6"><div class="panel"><h6 class="fw-bold">Revenue Trend</h6><canvas id="revenueChart" height="150"></canvas></div></div>
+        <div class="col-md-6"><div class="panel"><h6 class="fw-bold">Booking Source</h6><canvas id="sourceChart" height="150"></canvas></div></div>
+      </div>
+      <div class="row">
+        <div class="col-md-6"><div class="panel"><h6 class="fw-bold">Expense Trend</h6><canvas id="expenseTrendChart" height="150"></canvas></div></div>
+        <div class="col-md-6"><div class="panel"><h6 class="fw-bold">Cash Flow — Last 7 Days</h6><div id="cashFlowTable"></div></div></div>
+      </div>
+    </div>
+
+    <div id="page-rooms" class="page">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Room Management</h4>
+        <div class="d-flex gap-2">
+          <button class="btn-icon-gear" id="roomMasterBtn" onclick="openRoomMasterModal()"><i class="bi bi-gear"></i> Master</button>
+          <button class="btn-brand" id="addRoomBtn" onclick="openCreateRoomModal()"><i class="bi bi-plus-lg"></i> Add Room</button>
+        </div>
+      </div>
+      <div class="room-grid" id="roomGrid"></div>
+    </div>
+
+    <div id="page-guests" class="page">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Guest Management</h4>
+        <button class="btn-brand" id="addGuestBtn" data-bs-toggle="modal" data-bs-target="#guestModal" onclick="openCreateGuestModal()"><i class="bi bi-person-plus"></i> New Guest</button>
+      </div>
+      <input class="form-control search-box mb-3" id="guestSearch" placeholder="Search by name, mobile, ID, or GSTIN..." oninput="renderGuests()">
+      <div class="panel"><table><thead><tr><th>Name</th><th>Mobile</th><th>City</th><th>ID</th><th>GSTIN</th><th>Registered</th><th></th></tr></thead>
+      <tbody id="guestTableBody"></tbody></table></div>
+    </div>
+
+    <div id="page-bookings" class="page">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Bookings</h4>
+        <button class="btn-brand" id="addBookingBtn" data-bs-toggle="modal" data-bs-target="#bookingModal" onclick="resetBookingForm()"><i class="bi bi-plus-lg"></i> New Booking</button>
+      </div>
+      <div class="filter-bar">
+        <div class="fld"><label>From</label><input type="date" id="bk_filter_start" class="form-control form-control-sm"></div>
+        <div class="fld"><label>To</label><input type="date" id="bk_filter_end" class="form-control form-control-sm"></div>
+        <button class="btn btn-sm btn-brand" onclick="applyBookingFilter()">Apply</button>
+        <button class="btn btn-sm btn-light" onclick="clearBookingFilter()">Clear</button>
+        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="exportBookingsCSV()"><i class="bi bi-filetype-csv"></i> Export CSV</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="emailBookings()"><i class="bi bi-envelope"></i> Email</button>
+      </div>
+      <div class="panel"><table><thead><tr><th>Guest</th><th>Room</th><th>Source</th><th>Check-in</th><th>Check-out</th><th>Status</th><th></th></tr></thead>
+      <tbody id="bookingTableBody"></tbody></table></div>
+    </div>
+
+    <div id="page-billing" class="page">
+      <h4 class="fw-bold mb-3">Billing & Checkout</h4>
+      <div class="row">
+        <div class="col-md-4"><div class="panel"><h6 class="fw-bold">Pending Checkouts</h6><div id="pendingQueue"></div></div></div>
+        <div class="col-md-8"><div class="panel" id="billingPanel"><div class="text-muted text-center py-5">Select a checked-out guest to bill.</div></div></div>
+      </div>
+      <h5 class="fw-bold mb-2 mt-4">All Invoices</h5>
+      <div class="filter-bar">
+        <div class="fld"><label>From</label><input type="date" id="inv_filter_start" class="form-control form-control-sm"></div>
+        <div class="fld"><label>To</label><input type="date" id="inv_filter_end" class="form-control form-control-sm"></div>
+        <button class="btn btn-sm btn-brand" onclick="renderInvoiceList()">Apply</button>
+        <button class="btn btn-sm btn-light" onclick="clearInvoiceFilter()">Clear</button>
+        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="exportInvoicesCSV()"><i class="bi bi-filetype-csv"></i> Export CSV</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="emailInvoices()"><i class="bi bi-envelope"></i> Email</button>
+      </div>
+      <div class="panel"><table><thead><tr><th>Invoice</th><th>Guest</th><th>Date</th><th>Payment Mode</th><th>Total</th><th></th></tr></thead>
+      <tbody id="invoiceTableBody"></tbody></table></div>
+    </div>
+
+    <div id="page-expenses" class="page">
+      <h4 class="fw-bold mb-3">Expenses</h4>
+      <div class="exp-tabs" id="expTabs">
+        <button class="active" data-tab="create" onclick="showExpTab('create')">Create Expense</button>
+        <button data-tab="all" onclick="showExpTab('all')">All Expenses</button>
+        <button data-tab="pending" onclick="showExpTab('pending')">Pending Approval</button>
+        <button data-tab="vendors" onclick="showExpTab('vendors')">Vendors</button>
+      </div>
+
+      <div class="subtab-body active" id="expTab-create">
+        <div class="panel">
+          <div class="row g-2">
+            <input type="hidden" id="exp_edit_id">
+            <div class="col-md-4"><label class="form-label">Expense Date *</label><input type="date" id="exp_date" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">Expense Category *</label>
+              <select id="exp_category" class="form-select">
+                <option>Housekeeping Supplies</option><option>Maintenance</option><option>Utilities</option>
+                <option>F&B Purchase</option><option>Marketing</option><option>Salaries</option><option>Others</option>
+              </select></div>
+            <div class="col-md-4"><label class="form-label">Department *</label>
+              <select id="exp_department" class="form-select">
+                <option>Front Office</option><option>Housekeeping</option><option>F&B</option>
+                <option>Maintenance</option><option>Kitchen</option><option>Admin</option><option>Others</option>
+              </select></div>
+
+            <div class="col-md-8">
+              <label class="form-label">Vendor *</label>
+              <div class="form-check mb-1">
+                <input class="form-check-input" type="checkbox" id="exp_cash_toggle" onchange="toggleCashExpense()">
+                <label class="form-check-label small">Cash Expense (no vendor — uses permanent Cash / Petty Expense record)</label>
+              </div>
+              <div class="vendor-row-picker">
+                <select id="exp_vendor" class="form-select"></select>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="exp_addvendor_btn" style="white-space:nowrap;" onclick="openVendorModal(null, true)"><i class="bi bi-plus-lg"></i> Add Vendor</button>
+              </div>
+            </div>
+            <div class="col-md-4"><label class="form-label">Payment Method</label>
+              <select id="exp_paymentmethod" class="form-select"><option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>Card</option><option>Other</option></select></div>
+
+            <div class="col-12"><label class="form-label">Description *</label><input id="exp_description" class="form-control"></div>
+
+            <div class="col-md-3"><label class="form-label">Amount (₹) *</label><input type="number" id="exp_amount" class="form-control" oninput="recalcExpenseTotal()"></div>
+            <div class="col-md-3"><label class="form-label">GST Applicable</label>
+              <select id="exp_gstApplicable" class="form-select" onchange="toggleExpenseGSTFields()"><option value="no">No</option><option value="yes">Yes</option></select></div>
+            <div class="col-md-3" id="exp_gstin_box" style="display:none;"><label class="form-label">Vendor GSTIN</label><input id="exp_gstin" class="form-control"></div>
+            <div class="col-md-3"></div>
+
+            <div class="col-md-3" id="exp_cgst_box" style="display:none;"><label class="form-label">CGST (₹)</label><input type="number" id="exp_cgst" class="form-control" value="0" oninput="recalcExpenseTotal()"></div>
+            <div class="col-md-3" id="exp_sgst_box" style="display:none;"><label class="form-label">SGST (₹)</label><input type="number" id="exp_sgst" class="form-control" value="0" oninput="recalcExpenseTotal()"></div>
+            <div class="col-md-3" id="exp_igst_box" style="display:none;"><label class="form-label">IGST (₹)</label><input type="number" id="exp_igst" class="form-control" value="0" oninput="recalcExpenseTotal()"></div>
+            <div class="col-md-3"><label class="form-label">Total Amount (₹)</label><input type="text" id="exp_total_display" class="form-control" readonly></div>
+
+            <div class="col-md-6"><label class="form-label">Bill / Invoice Upload</label><input type="file" id="exp_bill_file" accept="image/*,.pdf" class="form-control"></div>
+            <div class="col-md-6"><label class="form-label">Remarks</label><input id="exp_remarks" class="form-control"></div>
+          </div>
+          <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-light" onclick="saveExpense('Draft')">Save Draft</button>
+            <button class="btn-brand" onclick="saveExpense('Submit')">Submit for Approval</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="subtab-body" id="expTab-all">
+        <div class="panel"><table><thead><tr><th>ID</th><th>Date</th><th>Vendor</th><th>Category</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+        <tbody id="allExpensesBody"></tbody></table></div>
+      </div>
+
+      <div class="subtab-body" id="expTab-pending">
+        <div class="panel"><table><thead><tr><th>ID</th><th>Date</th><th>Vendor</th><th>Category</th><th>Amount</th><th>Submitted By</th><th>Level</th><th></th></tr></thead>
+        <tbody id="pendingApprovalBody"></tbody></table></div>
+      </div>
+
+      <div class="subtab-body" id="expTab-vendors">
+        <div class="d-flex justify-content-between mb-3">
+          <div></div>
+          <button class="btn-brand" onclick="openVendorModal(null, false)"><i class="bi bi-plus-lg"></i> Add Vendor</button>
+        </div>
+        <div class="panel"><table><thead><tr><th>Vendor</th><th>Company</th><th>GSTIN</th><th>Mobile</th><th>Total Expenses</th><th>Last Expense</th><th>Status</th><th></th></tr></thead>
+        <tbody id="vendorsBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="page-reports" class="page">
+      <h4 class="fw-bold mb-3">Reports</h4>
+      <div class="filter-bar">
+        <div class="fld"><label>Report</label>
+          <select id="rpt_category" class="form-select form-select-sm" onchange="toggleReportViewOptions()">
+            <optgroup label="Hotel Reports">
+              <option value="revenue">Revenue</option>
+              <option value="gst">GST</option>
+              <option value="source">Booking Source</option>
+              <option value="outstanding">Outstanding Payments</option>
+              <option value="police">Police Report</option>
+              <option value="tally">Accounts Report</option>
+            </optgroup>
+            <optgroup label="Expense Reports">
+              <option value="expense_summary">Expense Summary</option>
+              <option value="expense_vendorwise">Expense Vendor-wise</option>
+            </optgroup>
+            <optgroup label="Financial Reports">
+              <option value="cashflow">Cash Flow Statement</option>
+              <option value="pnl">Profit & Loss</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="fld" id="rpt_view_box" style="display:none;"><label>View</label>
+          <select id="rpt_view" class="form-select form-select-sm"></select>
+        </div>
+        <div class="fld"><label>Range</label>
+          <select id="rpt_range_type" class="form-select form-select-sm" onchange="toggleReportRangeInputs()">
+            <option value="all">All Time</option>
+            <option value="month">Month</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="fld" id="rpt_month_box" style="display:none;"><label>Month</label><input type="month" id="rpt_month" class="form-control form-control-sm"></div>
+        <div class="fld" id="rpt_custom_start_box" style="display:none;"><label>From</label><input type="date" id="rpt_start" class="form-control form-control-sm"></div>
+        <div class="fld" id="rpt_custom_end_box" style="display:none;"><label>To</label><input type="date" id="rpt_end" class="form-control form-control-sm"></div>
+        <button class="btn btn-sm btn-brand" onclick="renderReport()">Apply</button>
+        <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="exportCurrentReportCSV()"><i class="bi bi-filetype-csv"></i> Export CSV</button>
+        <button class="btn btn-sm btn-outline-secondary" id="rpt_email_btn" onclick="emailCurrentReport()"><i class="bi bi-envelope"></i> Email</button>
+      </div>
+      <div class="panel"><div id="reportOutput"></div></div>
+    </div>
+
+    <div id="page-paymentsAdmin" class="page">
+      <h4 class="fw-bold mb-3">Payment Settings</h4>
+      <div class="alert alert-info small"><i class="bi bi-info-circle"></i> Frontend demo mode — no real payments are processed.</div>
+      <div class="panel">
+        <h6 class="fw-bold mb-3">Payment Collection Method</h6>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="pcm" id="pcm_upi" onchange="setPaymentMethod('upi')">
+          <label class="form-check-label" for="pcm_upi"><b>Hotel UPI QR</b> — low cost, manual verification</label>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="radio" name="pcm" id="pcm_gateway" onchange="setPaymentMethod('gateway')">
+          <label class="form-check-label" for="pcm_gateway"><b>Payment Gateway</b> — automatic verification via provider</label>
+        </div>
+      </div>
+      <div class="panel" id="upiQrPanel">
+        <h6 class="fw-bold mb-2">Hotel UPI QR</h6>
+        <div id="upiQrContent"></div>
+      </div>
+      <div class="panel" id="gatewayPanel">
+        <h6 class="fw-bold mb-2">Payment Gateway</h6>
+        <div id="gatewayContent"></div>
+      </div>
+      <div class="panel">
+        <h6 class="fw-bold mb-2">Audit Log — Payment & WhatsApp Settings</h6>
+        <div id="auditLogList"></div>
+      </div>
+    </div>
+
+    <div id="page-whatsappAdmin" class="page">
+      <h4 class="fw-bold mb-3">WhatsApp Settings</h4>
+      <div class="alert alert-info small"><i class="bi bi-info-circle"></i> Frontend demo mode — messages are simulated, not actually sent.</div>
+      <div class="panel">
+        <div class="form-check form-switch mb-2">
+          <input class="form-check-input" type="checkbox" id="wa_welcome_enabled" onchange="saveWhatsAppSettings()">
+          <label class="form-check-label">Enable Welcome Message (sent after booking)</label>
+        </div>
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="wa_checkout_enabled" onchange="saveWhatsAppSettings()">
+          <label class="form-check-label">Enable Checkout Payment Message</label>
+        </div>
+        <label class="form-label">Welcome Message Template</label>
+        <textarea id="wa_welcome_template" class="form-control mb-1" rows="3" oninput="updatePreview('welcome')"></textarea>
+        <div class="text-muted small mb-3">Variables: {{guest_name}} {{hotel_name}} {{booking_id}} {{check_in_date}} {{check_out_date}} {{room_number}}</div>
+        <div class="ai-box mb-3" id="welcomePreview"></div>
+        <label class="form-label">Checkout Payment Message Template</label>
+        <textarea id="wa_checkout_template" class="form-control mb-1" rows="4" oninput="updatePreview('checkout')"></textarea>
+        <div class="text-muted small mb-3">Variables: {{guest_name}} {{hotel_name}} {{balance_amount}}</div>
+        <div class="ai-box mb-3" id="checkoutPreview"></div>
+        <button class="btn-brand" onclick="saveWhatsAppSettings()">Save Changes</button>
+        <button class="btn btn-light" onclick="resetWhatsAppDefaults()">Reset to Default</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="roomMasterModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Room Master</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <button class="btn-brand mb-3" id="masterAddRoomBtn" onclick="bootstrap.Modal.getInstance(document.getElementById('roomMasterModal')).hide(); openCreateRoomModal();"><i class="bi bi-plus-lg"></i> Add Room</button>
+    <table><thead><tr><th>Room</th><th>Type</th><th>Floor</th><th>Rate</th><th>Status</th><th></th></tr></thead>
+    <tbody id="roomMasterBody"></tbody></table>
+  </div>
+</div></div></div>
+
+<div class="modal fade" id="roomModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5 id="roomModalTitle">Add Room</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="r_edit_id">
+    <div class="mb-3"><label class="form-label">Room Number</label><input id="r_number" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Room Type</label>
+      <select id="r_type" class="form-select" onchange="suggestRoomRate()">
+        <option value="Standard">Standard</option><option value="Deluxe">Deluxe</option><option value="Suite">Suite</option>
+        <option value="Party Hall">Party Hall</option><option value="Banquet">Banquet</option>
+      </select></div>
+    <div class="mb-3"><label class="form-label">Rate (₹ per night / event)</label><input type="number" id="r_rate" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Floor</label><input type="number" id="r_floor" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Room Details</label><textarea id="r_details" class="form-control" rows="2"></textarea></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="saveRoom()">Save</button></div>
+</div></div></div>
+
+<div class="modal fade" id="statusModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Change Status</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body d-grid gap-2">
+    <button class="btn btn-outline-success" onclick="changeRoomStatus('vacant')">Vacant</button>
+    <button class="btn btn-outline-primary" onclick="changeRoomStatus('occupied')">Occupied</button>
+    <button class="btn btn-outline-warning" onclick="changeRoomStatus('cleaning')">Cleaning</button>
+    <button class="btn btn-outline-danger" onclick="changeRoomStatus('maintenance')">Maintenance</button>
+  </div>
+</div></div></div>
+
+<div class="modal fade" id="guestModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5 id="guestModalTitle">New Guest</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="g_edit_id">
+    <div class="row g-2">
+      <div class="col-md-6"><label class="form-label">Full Name *</label><input id="g_name" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Mobile *</label><input id="g_mobile" class="form-control" maxlength="10"></div>
+      <div class="col-md-12"><label class="form-label">Address</label><input id="g_address" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">City</label><input id="g_city" class="form-control" list="cityList"></div>
+      <div class="col-md-6"><label class="form-label">State</label><input id="g_state" class="form-control" list="stateList" value="Karnataka"></div>
+      <div class="col-md-6"><label class="form-label">ID Type</label>
+        <select id="g_idtype" class="form-select" onchange="updateIdPlaceholder()"><option>Aadhaar</option><option>PAN</option><option>Passport</option><option>Driving License</option></select></div>
+      <div class="col-md-6"><label class="form-label">ID Number *</label><input id="g_idnum" class="form-control"></div>
+      <div class="col-md-12"><label class="form-label">GSTIN (optional)</label><input id="g_gstin" class="form-control" maxlength="15"></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="saveGuest()">Save Guest</button></div>
+</div></div></div>
+
+<datalist id="stateList">
+  <option value="Andhra Pradesh"><option value="Arunachal Pradesh"><option value="Assam"><option value="Bihar">
+  <option value="Chhattisgarh"><option value="Goa"><option value="Gujarat"><option value="Haryana">
+  <option value="Himachal Pradesh"><option value="Jharkhand"><option value="Karnataka"><option value="Kerala">
+  <option value="Madhya Pradesh"><option value="Maharashtra"><option value="Manipur"><option value="Meghalaya">
+  <option value="Mizoram"><option value="Nagaland"><option value="Odisha"><option value="Punjab">
+  <option value="Rajasthan"><option value="Sikkim"><option value="Tamil Nadu"><option value="Telangana">
+  <option value="Tripura"><option value="Uttar Pradesh"><option value="Uttarakhand"><option value="West Bengal">
+  <option value="Delhi"><option value="Jammu and Kashmir"><option value="Ladakh"><option value="Puducherry"><option value="Chandigarh">
+</datalist>
+<datalist id="cityList">
+  <option value="Bengaluru"><option value="Mumbai"><option value="Delhi"><option value="Chennai">
+  <option value="Hyderabad"><option value="Pune"><option value="Kolkata"><option value="Ahmedabad">
+  <option value="Jaipur"><option value="Lucknow"><option value="Surat"><option value="Kochi">
+  <option value="Chandigarh"><option value="Indore"><option value="Nagpur"><option value="Coimbatore">
+</datalist>
+
+<div class="modal fade" id="bookingModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5 id="bookingModalTitle">New Booking</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-2">
+      <input type="hidden" id="b_edit_id">
+      <div class="col-md-6"><label class="form-label">Primary Guest *</label><select id="b_guest" class="form-select"></select></div>
+      <div class="col-md-6">
+        <label class="form-label">Source</label>
+        <select id="b_source" class="form-select" onchange="toggleSourceBookingId()">
+          <option>Walk-in</option><option>Booking.com</option><option>MakeMyTrip</option><option>OYO</option><option>Website</option><option>Corporate</option>
+        </select>
+      </div>
+      <div class="col-md-6" id="sourceBookingIdBox" style="display:none;">
+        <label class="form-label">Booking ID / Reference Number</label>
+        <input id="b_sourceBookingId" class="form-control">
+      </div>
+      <div class="col-md-4"><label class="form-label">Check-in *</label><input type="date" id="b_checkin" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">Check-out *</label><input type="date" id="b_checkout" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">No. of Guests</label><input type="number" id="b_numguests" value="1" min="1" class="form-control" oninput="renderGuestDetailFields()"></div>
+      <div class="col-12" id="guestDetailsBox"></div>
+      <div class="col-md-4"><label class="form-label">GST Applicable</label>
+        <select id="b_gstApplicable" class="form-select"><option value="yes">Yes</option><option value="no">No</option></select></div>
+      <div class="col-md-4"><label class="form-label">Extra Person Charge (₹)</label><input type="number" id="b_extraPersonCharge" value="0" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">Early Morning Charge (₹)</label><input type="number" id="b_earlyMorningCharge" value="0" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Advance Amount (₹)</label><input type="number" id="b_advanceAmount" value="0" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Advance Payment Mode</label>
+        <select id="b_advancePaymentMode" class="form-select"><option>Cash</option><option>UPI</option><option>Net Banking</option><option>Card</option></select></div>
+      <div class="col-12 mt-2">
+        <button class="btn btn-outline-primary btn-sm" onclick="findAvailableRooms()"><i class="bi bi-search"></i> Check Availability</button>
+      </div>
+      <div class="col-12" id="availableRoomsBox"></div>
+      <div class="col-12" id="currentRoomNote"></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn-brand" id="confirmBookingBtn" onclick="saveBooking()" disabled>Select a room first</button></div>
+</div></div></div>
+
+<div class="modal fade" id="adminModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Administration</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body d-grid gap-2">
+    <button class="btn btn-outline-secondary text-start" id="userAccessMenuBtn" onclick="openUserAccess()"><i class="bi bi-people me-2"></i> User Access</button>
+    <button class="btn btn-outline-secondary text-start" id="businessSettingsMenuBtn" onclick="openBusinessSettings()"><i class="bi bi-gear-wide-connected me-2"></i> Business Settings</button>
+    <button class="btn btn-outline-secondary text-start" id="paymentSettingsMenuBtn" onclick="bootstrap.Modal.getInstance(document.getElementById('adminModal')).hide(); showPage('paymentsAdmin');"><i class="bi bi-credit-card me-2"></i> Payment Settings</button>
+    <button class="btn btn-outline-secondary text-start" id="whatsappSettingsMenuBtn" onclick="bootstrap.Modal.getInstance(document.getElementById('adminModal')).hide(); showPage('whatsappAdmin');"><i class="bi bi-whatsapp me-2"></i> WhatsApp Settings</button>
+    <button class="btn btn-outline-secondary text-start" id="expenseApprovalMenuBtn" onclick="openExpenseApprovalSettings()"><i class="bi bi-diagram-3 me-2"></i> Expense Approval Settings</button>
+    <button class="btn btn-outline-secondary text-start" onclick="contactSupport()"><i class="bi bi-headset me-2"></i> Contact Support</button>
+  </div>
+</div></div></div>
+
+<div class="modal fade" id="businessSettingsModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Business Settings</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <label class="form-label">Hotel / Business Legal Name</label>
+    <input id="bs_legalname" class="form-control mb-3">
+    <div class="text-muted small">This name appears in your sidebar, invoices, and WhatsApp messages throughout the portal.</div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="saveBusinessSettings()">Save</button></div>
+</div></div></div>
+
+<div class="modal fade" id="userAccessModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>User Access</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="alert alert-warning py-2 small">Adding a user creates their account directly in this browser with a password you set.</div>
+    <button class="btn-brand mb-3" onclick="openInviteForm()"><i class="bi bi-person-plus"></i> Invite User</button>
+    <table><thead><tr><th>Email / Username</th><th>Name</th><th>Access</th><th>Designation</th><th></th></tr></thead><tbody id="userAccessBody"></tbody></table>
+  </div>
+</div></div></div>
+
+<div class="modal fade" id="userFormModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header">
+    <div><h5 class="mb-1" id="userFormTitle">Invite User</h5></div>
+    <button class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="u_edit_username">
+    <label class="form-label">Email / Username</label>
+    <input id="u_username" class="form-control mb-2" placeholder="name@example.com">
+    <label class="form-label">Full Name *</label>
+    <input id="u_name" class="form-control mb-3">
+    <label class="form-label">Designation (used for expense approval routing)</label>
+    <select id="u_designation" class="form-select mb-3">
+      <option>Receptionist</option><option>Accountant</option><option>Manager</option>
+      <option>Finance Manager</option><option>General Manager</option><option>Owner</option>
+    </select>
+    <label class="form-label">Password *</label>
+    <input type="password" id="u_password" class="form-control mb-3">
+    <div class="row g-2 mb-3">
+      <div class="col-md-6"><div class="role-pick" id="roleMemberPick" onclick="selectRole('Member')"><b>Member</b><div class="text-muted small">Access based on permissions below.</div></div></div>
+      <div class="col-md-6"><div class="role-pick" id="roleOwnerPick" onclick="selectRole('Owner')"><b>Owner</b><div class="text-muted small">Full access to everything.</div></div></div>
+    </div>
+    <input type="hidden" id="u_role" value="Member">
+    <div id="permissionsBox" class="border rounded-3 p-3"></div>
+    <div id="u_error" class="text-danger small mt-2"></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="saveUser()">Save Access</button></div>
+</div></div></div>
+
+<div class="modal fade" id="supportModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Contact Support</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <a href="mailto:support.dashmize@gmail.com" class="btn btn-brand w-100 mb-2">Email support.dashmize@gmail.com</a>
+    <a href="tel:9229854108" class="btn btn-outline-secondary w-100">Call 9229854108</a>
+  </div>
+</div></div></div>
+
+<div class="modal fade" id="forgotModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Reset Password</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div id="forgotStep1">
+      <label class="form-label">Username / Email</label>
+      <input id="fp_username" class="form-control mb-2">
+      <button class="btn-brand w-100" onclick="forgotStep1()">Continue</button>
+      <div id="fp_error1" class="text-danger small mt-2"></div>
+    </div>
+    <div id="forgotStep2" style="display:none;">
+      <label class="form-label">New Password</label>
+      <input type="password" id="fp_newpass" class="form-control mb-2">
+      <label class="form-label">Confirm New Password</label>
+      <input type="password" id="fp_confirmpass" class="form-control mb-2">
+      <button class="btn-brand w-100" onclick="forgotStep2()">Reset Password</button>
+      <div id="fp_error2" class="text-danger small mt-2"></div>
+    </div>
+  </div>
+</div></div></div>
+
+<div class="modal fade" id="qrUploadModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Upload Hotel UPI QR</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="file" id="qr_file" accept="image/png,image/jpeg,image/webp" class="form-control mb-3" onchange="previewQrFile()">
+    <div id="qrPreviewBox" class="text-center"></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" id="qrSaveBtn" onclick="saveQr()" disabled>Save QR</button></div>
+</div></div></div>
+
+<div class="modal fade" id="gatewayConnectModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Connect Razorpay</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="alert alert-warning small">Demo mode — this simulates a connection.</div>
+    <label class="form-label">Connected Account Label (demo)</label>
+    <input id="gw_account_label" class="form-control" placeholder="e.g. Hotel's Razorpay Business Account">
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="confirmGatewayConnect()">Simulate Connect</button></div>
+</div></div></div>
+
+<div class="modal fade" id="markPaidModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Confirm Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <p>Confirm that you have verified the payment in the hotel's bank/UPI account.</p>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="mp_confirm_checkbox">
+      <label class="form-check-label">I confirm that the payment has been verified.</label>
+    </div>
+    <label class="form-label">UPI / Transaction Reference Number (optional)</label>
+    <input id="mp_utr" class="form-control">
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="confirmMarkPaid()">Confirm Payment</button></div>
+</div></div></div>
+
+<div class="modal fade" id="genericConfirmModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5 id="genericConfirmTitle">Are you sure?</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><p id="genericConfirmBody"></p></div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-danger" id="genericConfirmBtn">Confirm</button></div>
+</div></div></div>
+
+<div class="modal fade" id="vendorModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5 id="vendorModalTitle">Add Vendor</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="v_edit_id">
+    <input type="hidden" id="v_select_after_save">
+    <div class="row g-2">
+      <div class="col-md-6"><label class="form-label">Vendor Name *</label><input id="v_name" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Business / Company Name</label><input id="v_company" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Contact Person</label><input id="v_contact" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Mobile Number *</label><input id="v_mobile" class="form-control" maxlength="10"></div>
+      <div class="col-md-6"><label class="form-label">Email</label><input id="v_email" type="email" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">GSTIN</label><input id="v_gstin" class="form-control" maxlength="15"></div>
+      <div class="col-12"><label class="form-label">Address</label><input id="v_address" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">PAN</label><input id="v_pan" class="form-control" maxlength="10"></div>
+      <div class="col-md-6"><label class="form-label">Vendor Type</label>
+        <select id="v_type" class="form-select"><option>Supplier</option><option>Service Provider</option><option>Contractor</option><option>Utility</option><option>Other</option></select></div>
+      <div class="col-md-6"><label class="form-label">Bank Name</label><input id="v_bankname" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Bank Account Number</label><input id="v_bankaccount" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">IFSC</label><input id="v_ifsc" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">UPI ID</label><input id="v_upi" class="form-control"></div>
+      <div class="col-12"><label class="form-label">Notes</label><textarea id="v_notes" class="form-control" rows="2"></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="saveVendor()">Save Vendor</button></div>
+</div></div></div>
+
+<div class="modal fade" id="expenseApprovalSettingsModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Expense Approval Settings</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" id="eas_enabled" onchange="toggleExpenseApprovalUI()">
+      <label class="form-check-label">Expense Approval</label>
+    </div>
+    <div id="eas_hierarchy_box">
+      <h6 class="fw-bold">Approval Hierarchy</h6>
+      <div class="text-muted small mb-2">Select the levels this hotel wants to use, in order. The system will route automatically.</div>
+      <div id="eas_role_checks" class="mb-3"></div>
+
+      <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" id="eas_amount_enabled" onchange="toggleAmountTiersUI()">
+        <label class="form-check-label">Amount-Based Approval (optional)</label>
+      </div>
+      <div id="eas_amount_tiers_box">
+        <div id="eas_tiers_list"></div>
+        <button class="btn btn-sm btn-outline-secondary mt-2" onclick="addAmountTier()"><i class="bi bi-plus-lg"></i> Add Tier</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="saveExpenseApprovalSettings()">Save</button></div>
+</div></div></div>
+
+<div class="modal fade" id="rejectExpenseModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Reject Expense</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <label class="form-label">Reason *</label>
+    <select id="rej_reason_select" class="form-select mb-2">
+      <option>Duplicate bill</option><option>Incorrect amount</option><option>Invalid vendor</option><option>Missing invoice</option><option>Other</option>
+    </select>
+    <textarea id="rej_reason_text" class="form-control" rows="2" placeholder="Additional details (optional)"></textarea>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-danger" onclick="confirmRejectExpense()">Reject Expense</button></div>
+</div></div></div>
+
+<div class="modal fade" id="sendBackExpenseModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Send Back Expense</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <label class="form-label">Correction Reason *</label>
+    <textarea id="sb_reason_text" class="form-control" rows="2" placeholder="e.g. Please upload the original invoice."></textarea>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="confirmSendBackExpense()">Send Back</button></div>
+</div></div></div>
+
+<div class="modal fade" id="markExpensePaidModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Mark Expense as Paid</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-2">
+      <div class="col-md-6"><label class="form-label">Payment Date *</label><input type="date" id="mep_date" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Payment Method *</label>
+        <select id="mep_method" class="form-select"><option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>Card</option><option>Other</option></select></div>
+      <div class="col-md-6"><label class="form-label">Transaction Reference</label><input id="mep_ref" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Paid Amount (₹) *</label><input type="number" id="mep_amount" class="form-control"></div>
+      <div class="col-12"><label class="form-label">Remarks</label><input id="mep_remarks" class="form-control"></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn-brand" onclick="confirmMarkExpensePaid()">Mark as Paid</button></div>
+</div></div></div>
+
+<div class="modal fade" id="viewExpenseModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content" style="border-radius:16px;">
+  <div class="modal-header"><h5>Expense Details</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body" id="viewExpenseBody"></div>
+</div></div></div>
+
+<div id="toast" class="toast align-items-center text-white bg-dark border-0"><div class="d-flex">
+  <div class="toast-body" id="toastBody"></div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div>
+
+<div class="invoice-print" id="invoicePrint"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const DB_KEY = 'grlv_db';
+let selectedRoomId = null;
+let currentBookingIdForBilling = null;
+let bookingDateFilter = { start:'', end:'' };
+let invoiceDateFilter = { start:'', end:'' };
+let editingBookingId = null;
+window.currentFnbItems = [];
+window.currentOtherCharges = [];
+let lastReportHeaders = [], lastReportRows = [];
+let currentUser = null;
+let currentExpTab = 'create';
+let editingExpenseId = null;
+let expVendorwiseDrillVendorId = null;
+
+const DESIGNATIONS = ['Receptionist','Accountant','Manager','Finance Manager','General Manager','Owner'];
+
+const MODULES = [
+  { key:'dashboard', label:'Dashboard', actions:['view'] },
+  { key:'rooms', label:'Rooms', actions:['view','create','edit','delete'] },
+  { key:'guests', label:'Guests', actions:['view','create','edit','delete'] },
+  { key:'bookings', label:'Bookings', actions:['view','create','edit','delete'] },
+  { key:'billing', label:'Billing', actions:['view','create','edit','delete'] },
+  { key:'reports', label:'Reports', actions:['view'] },
+  { key:'expenses', label:'Expenses', actions:['view','create','edit','delete','approve','reject','sendback','markpaid','export','email'] },
+  { key:'businessSettings', label:'Business Settings', actions:['view','create','edit','delete'] },
+  { key:'paymentSettings', label:'Payment Settings', actions:['view','create','edit','delete'] },
+  { key:'whatsappSettings', label:'WhatsApp Settings', actions:['view','create','edit','delete'] },
+  { key:'paymentManagement', label:'Payment Management', actions:['view','create','edit','delete'] },
+  { key:'paymentStatus', label:'Payment Status', actions:['view','edit'] },
+];
+const ACTION_LABELS = { view:'View', create:'Create', edit:'Edit', delete:'Delete', approve:'Approve', reject:'Reject', sendback:'Send Back', markpaid:'Mark Paid', export:'Export', email:'Email' };
+function defaultPermissions() { const p = {}; MODULES.forEach(m => { p[m.key] = ['view']; }); return p; }
+function can(moduleKey, action) {
+  if (!currentUser) return false;
+  if (currentUser.role === 'Owner') return true;
+  const perms = currentUser.permissions || {};
+  return (perms[moduleKey] || []).includes(action);
+}
+const DEFAULT_WELCOME_TEMPLATE =
+`Hi {{guest_name}},
+
+Welcome to {{hotel_name}}!
+
+Your booking has been successfully confirmed.
+
+We look forward to welcoming you.
+
+Thank you,
+{{hotel_name}}`;
+
+const DEFAULT_CHECKOUT_TEMPLATE =
+`Hi {{guest_name}},
+
+Your checkout has been completed successfully at {{hotel_name}}.
+
+Amount payable: ₹{{balance_amount}}
+
+Please scan the QR code below to make the payment.
+
+Thank you for staying with us.
+
+{{hotel_name}}`;
+
+function loadDB() {
+  let db = JSON.parse(localStorage.getItem(DB_KEY) || 'null');
+  if (!db) {
+    const fullPerms = {}; MODULES.forEach(m => fullPerms[m.key] = [...m.actions]);
+    db = {
+      settings: { legalName: '' },
+      organizations: {},
+      users: [{ username: 'owner', password: 'owner123', name: 'Owner', role: 'Owner', jobRole:'Owner', permissions: fullPerms }],
+      rooms: [
+        { id: 1, number: '101', type: 'Standard', rate: 1800, floor: 1, status: 'vacant', details:'' },
+        { id: 2, number: '102', type: 'Standard', rate: 1800, floor: 1, status: 'occupied', details:'' },
+        { id: 3, number: '201', type: 'Deluxe', rate: 2800, floor: 2, status: 'vacant', details:'' },
+        { id: 4, number: '202', type: 'Deluxe', rate: 2800, floor: 2, status: 'cleaning', details:'' },
+        { id: 5, number: '301', type: 'Suite', rate: 4500, floor: 3, status: 'vacant', details:'' },
+      ],
+      guests: [
+        { id: 1, name: 'Rohan Mehta', mobile: '9876543210', address:'', city: 'Bengaluru', state: 'Karnataka', idType: 'Aadhaar', idNum: '123456789012', gstin:'', createdAt: new Date().toISOString() }
+      ],
+      bookings: [], invoices: [], payments: [],
+      nextId: { room: 6, guest: 2, booking: 1, invoice: 1 },
+    };
+    saveDB(db);
+  }
+  return db;
+}
+function saveDB(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+function migrateDB(db) {
+  if (!db.organizations) db.organizations = {};
+  if (!db.settings) db.settings = { legalName: '' };
+  if (db.settings.legalName === undefined) db.settings.legalName = '';
+  if (!db.payments) db.payments = [];
+  db.users.forEach(u => {
+    if (u.role === 'Admin') u.role = 'Owner';
+    if (!u.role) u.role = 'Member';
+    if (!u.jobRole) u.jobRole = u.role === 'Owner' ? 'Owner' : 'Receptionist';
+    if (!u.permissions) {
+      if (u.role === 'Owner') { const fp = {}; MODULES.forEach(m => fp[m.key] = [...m.actions]); u.permissions = fp; }
+      else u.permissions = defaultPermissions();
+    } else {
+      MODULES.forEach(m => { if (!u.permissions[m.key]) u.permissions[m.key] = u.role === 'Owner' ? [...m.actions] : []; });
+    }
+  });
+  db.guests.forEach(g => { if (g.gstin === undefined) g.gstin = ''; if (g.address === undefined) g.address = ''; });
+  db.rooms.forEach(r => { if (r.details === undefined) r.details = ''; });
+  db.bookings.forEach(b => {
+    if (b.gstApplicable === undefined) b.gstApplicable = true;
+    if (b.extraPersonCharge === undefined) b.extraPersonCharge = 0;
+    if (b.earlyMorningCharge === undefined) b.earlyMorningCharge = 0;
+    if (b.advanceAmount === undefined) b.advanceAmount = 0;
+    if (b.advancePaymentMode === undefined) b.advancePaymentMode = 'Cash';
+    if (b.additionalGuests === undefined) b.additionalGuests = [];
+    if (b.sourceBookingId === undefined) b.sourceBookingId = '';
+  });
+  db.invoices.forEach(i => {
+    if (i.paymentMode === undefined) i.paymentMode = 'Cash';
+    if (i.fnbItems === undefined) i.fnbItems = i.kotItems || [];
+    if (i.otherCharges === undefined) i.otherCharges = [];
+    if (i.extraCharges === undefined) i.extraCharges = 0;
+    if (i.guestGSTIN === undefined) i.guestGSTIN = '';
+  });
+  saveDB(db);
+  return db;
+}
+let DB = migrateDB(loadDB());
+
+function applyHotelName() {
+  const name = DB.settings.legalName || 'Your Hotel';
+  document.getElementById('pageTitle').textContent = name + ' — Hotel Management';
+  document.getElementById('illusBadge').textContent = DB.settings.legalName || 'Hotel Portal by Dashmize';
+  document.getElementById('sidebarBrand').textContent = name;
+}
+function applyUserMenu() {
+  if (!currentUser) return;
+  const initials = currentUser.name.split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('userMenuAvatar').textContent = initials;
+  document.getElementById('userMenuName').textContent = currentUser.name;
+  document.getElementById('udName').textContent = currentUser.name;
+  document.getElementById('udEmail').textContent = currentUser.username;
+}
+applyHotelName();
+
+function showToast(msg, isError = false) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastBody').textContent = msg;
+  el.classList.toggle('bg-danger', isError);
+  new bootstrap.Toast(el).show();
+}
+
+function validateIdNumber(idType, rawIdNum) {
+  const idNum = rawIdNum.replace(/\s|-/g, '').toUpperCase();
+  if (idType === 'Aadhaar') { if (!/^\d{12}$/.test(idNum)) return { ok:false, message:'Aadhaar must be exactly 12 digits.' }; }
+  else if (idType === 'PAN') { if (!/^[A-Z]{5}\d{4}[A-Z]$/.test(idNum)) return { ok:false, message:'PAN must be in format ABCDE1234F.' }; }
+  else if (idType === 'Passport') { if (!/^[A-Z]\d{7}$/.test(idNum)) return { ok:false, message:'Passport must be 1 letter followed by 7 digits.' }; }
+  else if (idType === 'Driving License') { if (!/^[A-Z0-9]{13,16}$/.test(idNum)) return { ok:false, message:'Driving License must be 13–16 alphanumeric characters.' }; }
+  return { ok:true, message:'' };
+}
+function validateGSTIN(rawGstin) {
+  const gstin = rawGstin.replace(/\s/g,'').toUpperCase();
+  if (!gstin) return { ok:true, message:'' };
+  if (!/^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) return { ok:false, message:'GSTIN format looks invalid.' };
+  return { ok:true, message:'' };
+}
+function updateIdPlaceholder() {
+  const type = document.getElementById('g_idtype').value;
+  const el = document.getElementById('g_idnum');
+  const placeholders = { 'Aadhaar':'12-digit Aadhaar number', 'PAN':'ABCDE1234F', 'Passport':'A1234567', 'Driving License':'KA0120210012345' };
+  el.placeholder = placeholders[type] || '';
+}
+
+function buildCSVBlob(headers, rows) {
+  let csv = headers.join(',') + '\n';
+  rows.forEach(r => { csv += r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',') + '\n'; });
+  return new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+}
+function exportCSV(filename, headers, rows) {
+  const blob = buildCSVBlob(headers, rows);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV downloaded — opens directly in Excel.');
+}
+async function emailExport(subject, filename, headers, rows) {
+  const blob = buildCSVBlob(headers, rows);
+  const file = new File([blob], filename + '.csv', { type: 'text/csv' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: subject, text: subject }); return; } catch (e) {}
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV downloaded — attach it to the email that just opened.');
+  setTimeout(() => { window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent('Please attach the downloaded CSV to this email.')}`; }, 400);
+}
+
+function showSignup() { document.getElementById('loginFormBox').style.display = 'none'; document.getElementById('signupFormBox').style.display = 'block'; }
+function showLogin() { document.getElementById('signupFormBox').style.display = 'none'; document.getElementById('loginFormBox').style.display = 'block'; }
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const user = DB.users.find(x => x.username === u && x.password === p);
+  if (!user) { document.getElementById('loginError').textContent = 'Invalid username or password.'; document.getElementById('loginError').style.display = 'block'; return; }
+  currentUser = user;
+  sessionStorage.setItem('grlv_session', JSON.stringify(user));
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = 'block';
+  initApp();
+}
+function doSignup() {
+  const legalName = document.getElementById('su_legalname').value.trim();
+  const name = document.getElementById('su_name').value.trim();
+  const email = document.getElementById('su_email').value.trim();
+  const pass = document.getElementById('su_pass').value;
+  const pass2 = document.getElementById('su_pass2').value;
+  const errEl = document.getElementById('signupError');
+  errEl.style.display = 'none';
+  if (!legalName || !name || !email || !pass) { errEl.textContent = 'All fields are required.'; errEl.style.display = 'block'; return; }
+  if (pass !== pass2) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+  if (DB.users.some(u => u.username.toLowerCase() === email.toLowerCase())) { errEl.textContent = 'An account with this email already exists.'; errEl.style.display = 'block'; return; }
+  if (!DB.settings.legalName) { DB.settings.legalName = legalName; applyHotelName(); }
+  DB.users.push({ username: email, password: pass, name, role: 'Member', jobRole:'Receptionist', permissions: { dashboard:['view'] } });
+  saveDB(DB);
+  showToast('Account created. An Owner needs to grant you module access.');
+  showLogin();
+  document.getElementById('loginUser').value = email;
+}
+function doLogout() {
+  sessionStorage.removeItem('grlv_session');
+  currentUser = null;
+  location.reload();
+}
+if (sessionStorage.getItem('grlv_session')) {
+  currentUser = JSON.parse(sessionStorage.getItem('grlv_session'));
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = 'block';
+  window.addEventListener('DOMContentLoaded', initApp);
+}
+let forgotUsername = null;
+function openForgotPassword() {
+  document.getElementById('forgotStep1').style.display = 'block';
+  document.getElementById('forgotStep2').style.display = 'none';
+  document.getElementById('fp_username').value = '';
+  document.getElementById('fp_error1').textContent = '';
+  new bootstrap.Modal(document.getElementById('forgotModal')).show();
+}
+function forgotStep1() {
+  const u = document.getElementById('fp_username').value.trim();
+  const user = DB.users.find(x => x.username === u);
+  if (!user) { document.getElementById('fp_error1').textContent = 'No account found.'; return; }
+  forgotUsername = u;
+  document.getElementById('forgotStep1').style.display = 'none';
+  document.getElementById('forgotStep2').style.display = 'block';
+}
+function forgotStep2() {
+  const p1 = document.getElementById('fp_newpass').value;
+  const p2 = document.getElementById('fp_confirmpass').value;
+  if (p1.length < 4) { document.getElementById('fp_error2').textContent = 'Password must be at least 4 characters.'; return; }
+  if (p1 !== p2) { document.getElementById('fp_error2').textContent = 'Passwords do not match.'; return; }
+  DB.users.find(x => x.username === forgotUsername).password = p1;
+  saveDB(DB);
+  bootstrap.Modal.getInstance(document.getElementById('forgotModal')).hide();
+  showToast('Password reset. You can log in now.');
+}
+
+function openBusinessSettings() {
+  if (currentUser.role !== 'Owner') { showToast('Only an Owner can edit business settings.', true); return; }
+  document.getElementById('bs_legalname').value = DB.settings.legalName || '';
+  bootstrap.Modal.getInstance(document.getElementById('adminModal'))?.hide();
+  new bootstrap.Modal(document.getElementById('businessSettingsModal')).show();
+}
+function saveBusinessSettings() {
+  DB.settings.legalName = document.getElementById('bs_legalname').value.trim();
+  saveDB(DB); applyHotelName();
+  bootstrap.Modal.getInstance(document.getElementById('businessSettingsModal')).hide();
+  showToast('Business settings saved.');
+}
+
+function openUserAccess() {
+  if (currentUser.role !== 'Owner') { showToast('Only an Owner can manage user access.', true); return; }
+  renderUserAccessList();
+  bootstrap.Modal.getInstance(document.getElementById('adminModal'))?.hide();
+  new bootstrap.Modal(document.getElementById('userAccessModal')).show();
+}
+function renderUserAccessList() {
+  document.getElementById('userAccessBody').innerHTML = DB.users.map(u => `
+    <tr><td>${u.username}</td><td>${u.name}</td>
+    <td>${u.role === 'Owner' ? '<span class="badge bg-primary">Owner</span>' : '<span class="badge bg-secondary">Member</span>'}</td>
+    <td>${u.jobRole}</td>
+    <td>
+      <button class="btn btn-sm btn-outline-secondary" onclick="openEditUserForm('${u.username}')"><i class="bi bi-pencil"></i></button>
+      <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.username}')"><i class="bi bi-trash"></i></button>
+    </td></tr>`).join('');
+}
+function renderPermissionsBox(existingPerms) {
+  const perms = existingPerms || defaultPermissions();
+  document.getElementById('permissionsBox').innerHTML = MODULES.map(m => {
+    const checked = a => (perms[m.key]||[]).includes(a) ? 'checked' : '';
+    const isAll = m.actions.every(a => (perms[m.key]||[]).includes(a));
+    const boxes = m.actions.map(a => `<label><input type="checkbox" data-module="${m.key}" data-action="${a}" ${checked(a)}> ${ACTION_LABELS[a]||a}</label>`).join('');
+    return `<div class="perm-row"><div class="mod-name">${m.label}</div>
+      <div class="perm-check">
+        ${m.actions.length>1?`<label><input type="checkbox" class="perm-all" data-module="${m.key}" ${isAll?'checked':''} onchange="toggleAllForModule('${m.key}', this.checked)"> All</label>`:''}
+        ${boxes}
+      </div></div>`;
+  }).join('');
+}
+function toggleAllForModule(moduleKey, checked) { document.querySelectorAll(`#permissionsBox input[data-module="${moduleKey}"][data-action]`).forEach(cb => cb.checked = checked); }
+function selectRole(role) {
+  document.getElementById('u_role').value = role;
+  document.getElementById('roleMemberPick').classList.toggle('selected', role === 'Member');
+  document.getElementById('roleOwnerPick').classList.toggle('selected', role === 'Owner');
+  document.getElementById('permissionsBox').style.display = role === 'Owner' ? 'none' : 'block';
+}
+function openInviteForm() {
+  document.getElementById('userFormTitle').textContent = 'Invite User';
+  document.getElementById('u_edit_username').value = '';
+  document.getElementById('u_username').value = '';
+  document.getElementById('u_username').disabled = false;
+  document.getElementById('u_name').value = '';
+  document.getElementById('u_designation').value = 'Receptionist';
+  document.getElementById('u_password').value = '';
+  document.getElementById('u_error').textContent = '';
+  selectRole('Member');
+  renderPermissionsBox(null);
+  new bootstrap.Modal(document.getElementById('userFormModal')).show();
+}
+function openEditUserForm(username) {
+  const u = DB.users.find(x => x.username === username);
+  document.getElementById('userFormTitle').textContent = 'Edit Access';
+  document.getElementById('u_edit_username').value = username;
+  document.getElementById('u_username').value = u.username;
+  document.getElementById('u_username').disabled = true;
+  document.getElementById('u_name').value = u.name;
+  document.getElementById('u_designation').value = u.jobRole || 'Receptionist';
+  document.getElementById('u_password').value = '';
+  document.getElementById('u_error').textContent = '';
+  selectRole(u.role);
+  renderPermissionsBox(u.permissions);
+  new bootstrap.Modal(document.getElementById('userFormModal')).show();
+}
+function collectPermissionsFromForm() {
+  const perms = {}; MODULES.forEach(m => perms[m.key] = []);
+  document.querySelectorAll('#permissionsBox input[data-module][data-action]').forEach(cb => { if (cb.checked) perms[cb.dataset.module].push(cb.dataset.action); });
+  return perms;
+}
+function saveUser() {
+  const editUsername = document.getElementById('u_edit_username').value;
+  const username = document.getElementById('u_username').value.trim();
+  const name = document.getElementById('u_name').value.trim();
+  const jobRole = document.getElementById('u_designation').value;
+  const role = document.getElementById('u_role').value;
+  const password = document.getElementById('u_password').value;
+  const errEl = document.getElementById('u_error');
+  if (!username || !name) { errEl.textContent = 'Email/username and name are required.'; return; }
+  const permissions = role === 'Owner' ? Object.fromEntries(MODULES.map(m => [m.key, [...m.actions]])) : collectPermissionsFromForm();
+  if (editUsername) {
+    const u = DB.users.find(x => x.username === editUsername);
+    u.name = name; u.role = role; u.jobRole = jobRole; u.permissions = permissions;
+    if (password) u.password = password;
+    if (currentUser.username === u.username) { currentUser = u; sessionStorage.setItem('grlv_session', JSON.stringify(u)); applyUserMenu(); }
+    showToast('Access updated.');
+  } else {
+    if (DB.users.some(x => x.username === username)) { errEl.textContent = 'A user with this email already exists.'; return; }
+    if (!password) { errEl.textContent = 'Set a password.'; return; }
+    DB.users.push({ username, name, role, jobRole, password, permissions });
+    showToast('User added with the selected access.');
+  }
+  saveDB(DB); renderUserAccessList();
+  bootstrap.Modal.getInstance(document.getElementById('userFormModal')).hide();
+}
+function deleteUser(username) {
+  if (DB.users.length <= 1) { showToast('Cannot delete the last remaining user.', true); return; }
+  if (username === currentUser.username) { showToast('You cannot delete your own account.', true); return; }
+  if (!confirm(`Remove user "${username}"?`)) return;
+  DB.users = DB.users.filter(u => u.username !== username);
+  saveDB(DB); renderUserAccessList();
+  showToast('User removed.');
+}
+function contactSupport() {
+  bootstrap.Modal.getInstance(document.getElementById('adminModal'))?.hide();
+  window.location.href = 'mailto:support.dashmize@gmail.com';
+  new bootstrap.Modal(document.getElementById('supportModal')).show();
+}
+
+/* ================= MULTI-TENANT ORG DATA + PAYMENT + WHATSAPP ================= */
+function currentOrgId() { return (DB.settings.legalName || 'DEFAULT_ORG').toUpperCase().replace(/\s+/g,'_'); }
+function getOrg() {
+  if (!DB.organizations) DB.organizations = {};
+  const id = currentOrgId();
+  if (!DB.organizations[id]) {
+    DB.organizations[id] = {
+      paymentMethod: 'upi', upiQr: null, upiQrHistory: [],
+      gateway: { provider: 'razorpay', connected: false, accountLabel: '', connectedBy: '', connectedAt: '' },
+      whatsapp: { welcomeEnabled: true, checkoutEnabled: true, welcomeTemplate: DEFAULT_WELCOME_TEMPLATE, checkoutTemplate: DEFAULT_CHECKOUT_TEMPLATE },
+      auditLog: [], payments: {},
+      vendors: [], expenses: [], nextVendorId: 1, nextExpenseSeq: 1,
+      expenseSettings: { approvalEnabled: false, hierarchy: [], amountBasedEnabled: false, tiers: [] },
+    };
+    saveDB(DB);
+  }
+  const org = DB.organizations[id];
+  if (org.vendors === undefined) org.vendors = [];
+  if (org.expenses === undefined) org.expenses = [];
+  if (org.nextVendorId === undefined) org.nextVendorId = 1;
+  if (org.nextExpenseSeq === undefined) org.nextExpenseSeq = 1;
+  if (org.expenseSettings === undefined) org.expenseSettings = { approvalEnabled:false, hierarchy:[], amountBasedEnabled:false, tiers:[] };
+  ensureCashVendor(org);
+  return org;
+}
+function ensureCashVendor(org) {
+  let cash = org.vendors.find(v => v.isSystem && v.systemType === 'cash');
+  if (!cash) {
+    cash = { id: -999, name: 'Cash / Petty Expense', company:'', contact:'', mobile:'0000000000', email:'', gstin:'', address:'', pan:'', vendorType:'Other', bankName:'', bankAccount:'', ifsc:'', upi:'', notes:'System vendor for cash/petty expenses with no external vendor.', status:'Active', isSystem:true, systemType:'cash', createdAt: new Date().toLocaleString('en-IN') };
+    org.vendors.unshift(cash);
+    saveDB(DB);
+  }
+  return cash;
+}
+function logAudit(action) {
+  const org = getOrg();
+  org.auditLog.unshift({ time: new Date().toLocaleString('en-IN'), user: currentUser?.name || 'System', action });
+  org.auditLog = org.auditLog.slice(0, 50);
+  saveDB(DB);
+}
+function fillTemplate(tpl, vars) { let out = tpl; Object.entries(vars).forEach(([k,v]) => { out = out.replaceAll(`{{${k}}}`, v); }); return out; }
+
+const PaymentProvider = {
+  connect: (label) => ({ connected: true, accountLabel: label, connectedAt: new Date().toLocaleString('en-IN') }),
+  disconnect: () => ({ connected: false }),
+  createPayment: (amount) => ({ status: 'QR_GENERATED', amount, qrToken: 'DEMO-' + Date.now() }),
+  getPaymentStatus: () => 'PAYMENT_PENDING',
+};
+const WhatsAppService = {
+  sendWelcomeMessage: (guestName, mobile) => { logAudit(`Simulated WhatsApp welcome to ${guestName} (${mobile})`); return { status: 'Sent' }; },
+  sendCheckoutPaymentMessage: (guestName, mobile) => { logAudit(`Simulated WhatsApp payment request to ${guestName} (${mobile})`); return { status: 'Sent' }; },
+};
+
+function setPaymentMethod(method) {
+  if (!can('paymentSettings','edit')) { showToast('No permission to change the payment collection method.', true); return; }
+  const org = getOrg();
+  org.paymentMethod = method;
+  saveDB(DB);
+  logAudit(`Changed payment collection method to ${method === 'upi' ? 'Hotel UPI QR' : 'Payment Gateway'}`);
+  renderPaymentSettingsPage();
+}
+function renderPaymentSettingsPage() {
+  const org = getOrg();
+  document.getElementById('pcm_upi').checked = org.paymentMethod === 'upi';
+  document.getElementById('pcm_gateway').checked = org.paymentMethod === 'gateway';
+  document.getElementById('upiQrPanel').style.display = org.paymentMethod === 'upi' ? 'block' : 'none';
+  document.getElementById('gatewayPanel').style.display = org.paymentMethod === 'gateway' ? 'block' : 'none';
+  const canEdit = can('paymentSettings','edit');
+  const canDelete = can('paymentSettings','delete');
+  const canCreate = can('paymentSettings','create');
+  const qr = org.upiQr;
+  document.getElementById('upiQrContent').innerHTML = qr ? `
+    <img src="${qr.image}" style="max-width:200px; border:1px solid #e3e8f0; border-radius:8px;" class="mb-2"><br>
+    <div class="small text-muted mb-2">Status: <b class="text-success">Active</b> · Last Updated: ${qr.uploadedAt} · By: ${qr.uploadedBy}</div>
+    ${canEdit ? `<button class="btn btn-sm btn-outline-secondary" onclick="openQrUploadModal()">Replace QR</button>` : ''}
+    ${canDelete ? `<button class="btn btn-sm btn-outline-danger" onclick="confirmRemoveQr()">Remove QR</button>` : ''}
+    <div class="alert alert-warning small mt-3">Payments made through the hotel's own UPI QR may require manual verification.</div>
+  ` : `
+    <div class="text-muted mb-2">No Hotel UPI QR configured.</div>
+    ${canCreate ? `<button class="btn-brand" onclick="openQrUploadModal()">Upload QR</button>` : `<div class="text-muted small">No permission to upload a QR.</div>`}
+  `;
+  const gw = org.gateway;
+  document.getElementById('gatewayContent').innerHTML = gw.connected ? `
+    <div class="mb-2"><b>Razorpay</b> — <span class="text-success">✓ Connected</span></div>
+    <div class="small text-muted mb-2">Connected Account: ${gw.accountLabel}<br>Last Connected: ${gw.connectedAt}<br>Connected By: ${gw.connectedBy}</div>
+    ${canEdit ? `<button class="btn btn-sm btn-outline-secondary" onclick="new bootstrap.Modal(document.getElementById('gatewayConnectModal')).show()">Manage</button>` : ''}
+    ${canDelete ? `<button class="btn btn-sm btn-outline-danger" onclick="confirmDisconnectGateway()">Disconnect</button>` : ''}
+  ` : `
+    <div class="text-muted mb-2">No payment gateway connected.</div>
+    ${canCreate ? `<button class="btn-brand" onclick="new bootstrap.Modal(document.getElementById('gatewayConnectModal')).show()">Connect Razorpay</button>` : `<div class="text-muted small">No permission to connect a payment gateway.</div>`}
+  `;
+  document.getElementById('auditLogList').innerHTML = org.auditLog.length ? org.auditLog.map(a => `<div class="fnb-row"><span>${a.time} — ${a.user}</span><span>${a.action}</span></div>`).join('') : '<div class="text-muted small">No activity yet.</div>';
+}
+let qrPendingDataUrl = null;
+function openQrUploadModal() {
+  if (!can('paymentSettings','create') && !can('paymentSettings','edit')) { showToast('No permission to manage the payment QR.', true); return; }
+  document.getElementById('qr_file').value = '';
+  document.getElementById('qrPreviewBox').innerHTML = '';
+  document.getElementById('qrSaveBtn').disabled = true;
+  qrPendingDataUrl = null;
+  new bootstrap.Modal(document.getElementById('qrUploadModal')).show();
+}
+function previewQrFile() {
+  const file = document.getElementById('qr_file').files[0];
+  if (!file) return;
+  const validTypes = ['image/png','image/jpeg','image/webp'];
+  if (!validTypes.includes(file.type)) { showToast('Unsupported file type. Use PNG, JPG, or WEBP.', true); return; }
+  if (file.size > 3 * 1024 * 1024) { showToast('File too large. Maximum 3MB.', true); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    qrPendingDataUrl = reader.result;
+    document.getElementById('qrPreviewBox').innerHTML = `<img src="${reader.result}" style="max-width:220px; border:1px solid #e3e8f0; border-radius:8px;">`;
+    document.getElementById('qrSaveBtn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+function saveQr() {
+  const org = getOrg();
+  if (org.upiQr) org.upiQrHistory.unshift(org.upiQr);
+  org.upiQr = { image: qrPendingDataUrl, uploadedBy: currentUser.name, uploadedAt: new Date().toLocaleString('en-IN'), status: 'Active' };
+  saveDB(DB);
+  logAudit('Updated Hotel UPI QR');
+  bootstrap.Modal.getInstance(document.getElementById('qrUploadModal')).hide();
+  renderPaymentSettingsPage();
+  showToast('Hotel UPI QR updated successfully.');
+}
+function confirmRemoveQr() {
+  showGenericConfirm('Remove Hotel UPI QR', 'Are you sure you want to remove the active payment QR?', () => {
+    const org = getOrg();
+    if (org.upiQr) org.upiQrHistory.unshift(org.upiQr);
+    org.upiQr = null;
+    saveDB(DB);
+    logAudit('Removed Hotel UPI QR');
+    renderPaymentSettingsPage();
+    showToast('QR removed.');
+  });
+}
+function confirmGatewayConnect() {
+  if (!can('paymentSettings','create') && !can('paymentSettings','edit')) { showToast('No permission to connect a payment gateway.', true); return; }
+  const label = document.getElementById('gw_account_label').value.trim() || 'Demo Razorpay Account';
+  const org = getOrg();
+  const result = PaymentProvider.connect(label);
+  org.gateway = { provider:'razorpay', connected:true, accountLabel: label, connectedBy: currentUser.name, connectedAt: result.connectedAt };
+  saveDB(DB);
+  logAudit('Connected payment gateway (Razorpay, demo)');
+  bootstrap.Modal.getInstance(document.getElementById('gatewayConnectModal')).hide();
+  renderPaymentSettingsPage();
+  showToast('Razorpay connected (demo mode).');
+}
+function confirmDisconnectGateway() {
+  showGenericConfirm('Disconnect Payment Gateway', 'Are you sure you want to disconnect the payment gateway?', () => {
+    const org = getOrg();
+    org.gateway.connected = false;
+    saveDB(DB);
+    logAudit('Disconnected payment gateway');
+    renderPaymentSettingsPage();
+    showToast('Payment gateway disconnected.');
+  });
+}
+function showGenericConfirm(title, body, onConfirm) {
+  document.getElementById('genericConfirmTitle').textContent = title;
+  document.getElementById('genericConfirmBody').textContent = body;
+  const btn = document.getElementById('genericConfirmBtn');
+  const newBtn = btn.cloneNode(true); btn.parentNode.replaceChild(newBtn, btn);
+  newBtn.addEventListener('click', () => { onConfirm(); bootstrap.Modal.getInstance(document.getElementById('genericConfirmModal')).hide(); });
+  new bootstrap.Modal(document.getElementById('genericConfirmModal')).show();
+}
+function renderWhatsAppSettingsPage() {
+  const org = getOrg();
+  document.getElementById('wa_welcome_enabled').checked = org.whatsapp.welcomeEnabled;
+  document.getElementById('wa_checkout_enabled').checked = org.whatsapp.checkoutEnabled;
+  document.getElementById('wa_welcome_template').value = org.whatsapp.welcomeTemplate;
+  document.getElementById('wa_checkout_template').value = org.whatsapp.checkoutTemplate;
+  const editable = can('whatsappSettings','edit');
+  ['wa_welcome_enabled','wa_checkout_enabled','wa_welcome_template','wa_checkout_template'].forEach(id => document.getElementById(id).disabled = !editable);
+  updatePreview('welcome'); updatePreview('checkout');
+}
+function updatePreview(which) {
+  const sampleVars = { guest_name:'Rohan', hotel_name: DB.settings.legalName || 'Your Hotel', booking_id:'B1023', check_in_date:'2026-08-12', check_out_date:'2026-08-14', room_number:'204', balance_amount:'3200' };
+  if (which === 'welcome') document.getElementById('welcomePreview').textContent = fillTemplate(document.getElementById('wa_welcome_template').value, sampleVars);
+  else document.getElementById('checkoutPreview').textContent = fillTemplate(document.getElementById('wa_checkout_template').value, sampleVars);
+}
+function saveWhatsAppSettings() {
+  if (!can('whatsappSettings','edit')) { showToast('No permission to change WhatsApp settings.', true); return; }
+  const org = getOrg();
+  org.whatsapp.welcomeEnabled = document.getElementById('wa_welcome_enabled').checked;
+  org.whatsapp.checkoutEnabled = document.getElementById('wa_checkout_enabled').checked;
+  org.whatsapp.welcomeTemplate = document.getElementById('wa_welcome_template').value;
+  org.whatsapp.checkoutTemplate = document.getElementById('wa_checkout_template').value;
+  saveDB(DB);
+  logAudit('Changed WhatsApp settings');
+  showToast('WhatsApp settings saved.');
+}
+function resetWhatsAppDefaults() {
+  document.getElementById('wa_welcome_template').value = DEFAULT_WELCOME_TEMPLATE;
+  document.getElementById('wa_checkout_template').value = DEFAULT_CHECKOUT_TEMPLATE;
+  updatePreview('welcome'); updatePreview('checkout');
+}
+function offerWelcomeWhatsApp(guestName, mobile, bookingId, checkIn, checkOut, roomNumber) {
+  const org = getOrg();
+  if (!org.whatsapp.welcomeEnabled) return;
+  const vars = { guest_name: guestName, hotel_name: DB.settings.legalName || 'Your Hotel', booking_id: String(bookingId), check_in_date: checkIn, check_out_date: checkOut, room_number: roomNumber };
+  const message = fillTemplate(org.whatsapp.welcomeTemplate, vars);
+  if (confirm(`Send WhatsApp welcome message to ${guestName} (${mobile})?\n\n${message}`)) {
+    WhatsAppService.sendWelcomeMessage(guestName, mobile);
+    showToast('Welcome WhatsApp message sent (demo).');
+  }
+}
+function renderPaymentCollectionPanel(containerId, invoiceId, guestName, mobile, balanceDue) {
+  const org = getOrg();
+  const payState = org.payments[invoiceId] || { status: 'PAYMENT_PENDING' };
+  let qrImg = '';
+  if (org.paymentMethod === 'upi') {
+    qrImg = org.upiQr ? `<img src="${org.upiQr.image}" style="max-width:180px; border:1px solid #e3e8f0; border-radius:8px;">` : `<div class="text-muted small">No Hotel UPI QR configured — set one in Administration → Payment Settings.</div>`;
+  } else {
+    qrImg = `<div class="border rounded-3 p-3 text-center small text-muted" style="width:180px;">Dynamic QR (demo)<br>Ref: ${payState.qrToken || 'pending'}</div>`;
+  }
+  const statusLabels = { PAYMENT_PENDING:'Payment Pending', QR_GENERATED:'QR Generated', PAYMENT_PROCESSING:'Payment Processing', PAID:'Paid', PAYMENT_FAILED:'Payment Failed', PAYMENT_EXPIRED:'Payment Expired', PAYMENT_CANCELLED:'Payment Cancelled', PARTIALLY_PAID:'Partially Paid', REFUNDED:'Refunded' };
+  const existing = document.getElementById(containerId).innerHTML;
+  document.getElementById(containerId).innerHTML = existing + `
+    <div class="border rounded-3 p-3 mt-3">
+      <div class="fw-bold mb-1">Payment Collection Method: ${org.paymentMethod === 'upi' ? 'Hotel UPI QR' : 'Payment Gateway (Razorpay)'}</div>
+      <div class="mb-2">Amount Payable: <b>₹${balanceDue.toFixed(2)}</b></div>
+      ${qrImg}
+      <div class="mt-2">Status: <span class="status-pill ${payState.status === 'PAID' ? 'checked_in' : 'confirmed'}">${statusLabels[payState.status]}</span></div>
+      <div class="mt-2 d-flex gap-2 flex-wrap">
+        <button class="btn btn-sm btn-outline-success" onclick="sendCheckoutWhatsApp('${guestName.replace(/'/g,"\\'")}','${mobile}',${balanceDue})"><i class="bi bi-whatsapp"></i> Send on WhatsApp</button>
+        ${org.paymentMethod === 'upi' && can('paymentStatus','edit') ? `<button class="btn btn-sm btn-brand" onclick="openMarkPaid('${invoiceId}')">Mark as Paid</button>` : ''}
+        ${org.paymentMethod === 'gateway' ? `<span class="text-muted small">Status updates automatically once the backend receives a payment webhook.</span>` : ''}
+      </div>
+    </div>`;
+}
+function sendCheckoutWhatsApp(guestName, mobile, balanceDue) {
+  const org = getOrg();
+  if (!org.whatsapp.checkoutEnabled) { showToast('Checkout payment WhatsApp messages are disabled.', true); return; }
+  const vars = { guest_name: guestName, hotel_name: DB.settings.legalName || 'Your Hotel', balance_amount: balanceDue.toFixed(2) };
+  const message = fillTemplate(org.whatsapp.checkoutTemplate, vars);
+  if (confirm(`Send this WhatsApp payment request to ${mobile}?\n\n${message}`)) {
+    WhatsAppService.sendCheckoutPaymentMessage(guestName, mobile);
+    showToast('Payment request sent on WhatsApp (demo).');
+  }
+}
+let pendingMarkPaidInvoiceId = null;
+function openMarkPaid(invoiceId) {
+  if (!can('paymentStatus','edit')) { showToast('No permission to update payment status.', true); return; }
+  pendingMarkPaidInvoiceId = invoiceId;
+  document.getElementById('mp_confirm_checkbox').checked = false;
+  document.getElementById('mp_utr').value = '';
+  new bootstrap.Modal(document.getElementById('markPaidModal')).show();
+}
+function confirmMarkPaid() {
+  if (!document.getElementById('mp_confirm_checkbox').checked) { showToast('Please confirm you have verified the payment.', true); return; }
+  const org = getOrg();
+  org.payments[pendingMarkPaidInvoiceId] = { status: 'PAID', utr: document.getElementById('mp_utr').value.trim(), verifiedBy: currentUser.name, verifiedAt: new Date().toLocaleString('en-IN'), method: org.paymentMethod };
+  saveDB(DB);
+  logAudit(`Marked payment as paid for ${pendingMarkPaidInvoiceId}`);
+  bootstrap.Modal.getInstance(document.getElementById('markPaidModal')).hide();
+  showToast('Payment marked as paid.');
+  if (currentBookingIdForBilling) openBillingFor(currentBookingIdForBilling);
+}
+
+/* ================= EXPENSE MODULE ================= */
+function inr(n) { return '₹' + Number(n||0).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+function showExpTab(tab) {
+  currentExpTab = tab;
+  document.querySelectorAll('#expTabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('#page-expenses > .subtab-body').forEach(el => el.classList.remove('active'));
+  document.getElementById('expTab-' + tab).classList.add('active');
+  if (tab === 'create') { resetExpenseForm(); }
+  if (tab === 'all') renderAllExpenses();
+  if (tab === 'pending') renderPendingApproval();
+  if (tab === 'vendors') renderVendorsList();
+}
+function loadExpensePageDefaults() { showExpTab(currentExpTab); populateVendorSelect(); }
+
+/* ---------- Vendor Master ---------- */
+function populateVendorSelect() {
+  const org = getOrg();
+  const sel = document.getElementById('exp_vendor');
+  sel.innerHTML = `<option value="">Select vendor...</option>` + org.vendors.filter(v=>v.status==='Active').map(v => `<option value="${v.id}">${v.name}${v.gstin?(' — '+v.gstin):''}${v.isSystem?' (System)':''}</option>`).join('');
+}
+function openVendorModal(vendorId, selectAfterSave) {
+  document.getElementById('v_edit_id').value = vendorId || '';
+  document.getElementById('v_select_after_save').value = selectAfterSave ? '1' : '0';
+  document.getElementById('vendorModalTitle').textContent = vendorId ? 'Edit Vendor' : 'Add Vendor';
+  ['v_name','v_company','v_contact','v_mobile','v_email','v_gstin','v_address','v_pan','v_bankname','v_bankaccount','v_ifsc','v_upi','v_notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('v_type').value = 'Supplier';
+  if (vendorId) {
+    const org = getOrg();
+    const v = org.vendors.find(x => x.id === vendorId);
+    if (v) {
+      document.getElementById('v_name').value = v.name; document.getElementById('v_company').value = v.company||'';
+      document.getElementById('v_contact').value = v.contact||''; document.getElementById('v_mobile').value = v.mobile||'';
+      document.getElementById('v_email').value = v.email||''; document.getElementById('v_gstin').value = v.gstin||'';
+      document.getElementById('v_address').value = v.address||''; document.getElementById('v_pan').value = v.pan||'';
+      document.getElementById('v_type').value = v.vendorType||'Supplier'; document.getElementById('v_bankname').value = v.bankName||'';
+      document.getElementById('v_bankaccount').value = v.bankAccount||''; document.getElementById('v_ifsc').value = v.ifsc||'';
+      document.getElementById('v_upi').value = v.upi||''; document.getElementById('v_notes').value = v.notes||'';
+    }
+  }
+  new bootstrap.Modal(document.getElementById('vendorModal')).show();
+}
+function saveVendor() {
+  const editId = document.getElementById('v_edit_id').value;
+  const selectAfter = document.getElementById('v_select_after_save').value === '1';
+  const name = document.getElementById('v_name').value.trim();
+  const mobile = document.getElementById('v_mobile').value.trim();
+  if (!name || !mobile) { showToast('Vendor name and mobile number are required.', true); return; }
+  const org = getOrg();
+  const data = {
+    name, company: document.getElementById('v_company').value.trim(), contact: document.getElementById('v_contact').value.trim(),
+    mobile, email: document.getElementById('v_email').value.trim(), gstin: document.getElementById('v_gstin').value.trim(),
+    address: document.getElementById('v_address').value.trim(), pan: document.getElementById('v_pan').value.trim(),
+    vendorType: document.getElementById('v_type').value, bankName: document.getElementById('v_bankname').value.trim(),
+    bankAccount: document.getElementById('v_bankaccount').value.trim(), ifsc: document.getElementById('v_ifsc').value.trim(),
+    upi: document.getElementById('v_upi').value.trim(), notes: document.getElementById('v_notes').value.trim(),
+  };
+  let newId;
+  if (editId) {
+    const v = org.vendors.find(x => x.id === parseInt(editId));
+    if (v.isSystem) { showToast('The system Cash/Petty Expense vendor cannot be edited.', true); return; }
+    Object.assign(v, data);
+    newId = v.id;
+    showToast('Vendor updated.');
+  } else {
+    newId = org.nextVendorId++;
+    org.vendors.push({ id: newId, ...data, status: 'Active', createdAt: new Date().toLocaleString('en-IN') });
+    showToast('Vendor saved to Vendor Master.');
+  }
+  saveDB(DB);
+  populateVendorSelect();
+  if (selectAfter) { document.getElementById('exp_vendor').value = newId; onVendorSelected(); }
+  renderVendorsList();
+  bootstrap.Modal.getInstance(document.getElementById('vendorModal')).hide();
+}
+function onVendorSelected() {
+  const org = getOrg();
+  const v = org.vendors.find(x => x.id === parseInt(document.getElementById('exp_vendor').value));
+  if (v) document.getElementById('exp_gstin').value = v.gstin || '';
+}
+document.addEventListener('change', e => { if (e.target && e.target.id === 'exp_vendor') onVendorSelected(); });
+
+function toggleCashExpense() {
+  const org = getOrg();
+  const cash = ensureCashVendor(org);
+  const checked = document.getElementById('exp_cash_toggle').checked;
+  document.getElementById('exp_vendor').disabled = checked;
+  document.getElementById('exp_addvendor_btn').style.display = checked ? 'none' : '';
+  if (checked) { document.getElementById('exp_vendor').value = cash.id; onVendorSelected(); }
+}
+
+function toggleVendorStatus(vendorId) {
+  const org = getOrg();
+  const v = org.vendors.find(x => x.id === vendorId);
+  if (v.isSystem) { showToast('The system Cash/Petty Expense vendor cannot be deactivated.', true); return; }
+  const newStatus = v.status === 'Active' ? 'Inactive' : 'Active';
+  showGenericConfirm(newStatus === 'Inactive' ? 'Deactivate Vendor' : 'Reactivate Vendor', `Are you sure you want to set ${v.name} to ${newStatus}? Historical expenses keep this vendor.`, () => {
+    v.status = newStatus; saveDB(DB); renderVendorsList(); populateVendorSelect();
+    showToast(`Vendor ${newStatus.toLowerCase()}.`);
+  });
+}
+function renderVendorsList() {
+  const org = getOrg();
+  document.getElementById('vendorsBody').innerHTML = org.vendors.map(v => {
+    const vExpenses = org.expenses.filter(e => e.vendorId === v.id);
+    const total = vExpenses.reduce((s,e) => s + e.total, 0);
+    const lastDate = vExpenses.length ? vExpenses.map(e=>e.date).sort().slice(-1)[0] : '—';
+    return `<tr><td>${v.name}${v.isSystem?' <span class="badge bg-secondary">System</span>':''}</td><td>${v.company||'—'}</td><td>${v.gstin||'—'}</td><td>${v.mobile}</td>
+      <td>${inr(total)}</td><td>${lastDate}</td>
+      <td><span class="exp-badge ${v.status==='Active'?'exp-approved':'exp-draft'}">${v.status}</span></td>
+      <td>
+        ${!v.isSystem ? `<button class="btn btn-sm btn-outline-secondary" onclick="openVendorModal(${v.id}, false)"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="toggleVendorStatus(${v.id})">${v.status==='Active'?'Deactivate':'Activate'}</button>` : '<span class="text-muted small">—</span>'}
+      </td></tr>`;
+  }).join('') || `<tr><td colspan="8" class="text-center text-muted py-3">No vendors yet.</td></tr>`;
+}
+
+/* ---------- Create / Edit Expense ---------- */
+function toggleExpenseGSTFields() {
+  const on = document.getElementById('exp_gstApplicable').value === 'yes';
+  ['exp_gstin_box','exp_cgst_box','exp_sgst_box','exp_igst_box'].forEach(id => document.getElementById(id).style.display = on ? 'block' : 'none');
+  recalcExpenseTotal();
+}
+function recalcExpenseTotal() {
+  const amount = parseFloat(document.getElementById('exp_amount').value) || 0;
+  const gstOn = document.getElementById('exp_gstApplicable').value === 'yes';
+  const cgst = gstOn ? (parseFloat(document.getElementById('exp_cgst').value) || 0) : 0;
+  const sgst = gstOn ? (parseFloat(document.getElementById('exp_sgst').value) || 0) : 0;
+  const igst = gstOn ? (parseFloat(document.getElementById('exp_igst').value) || 0) : 0;
+  document.getElementById('exp_total_display').value = inr(amount + cgst + sgst + igst);
+}
+function resetExpenseForm() {
+  editingExpenseId = null;
+  document.getElementById('exp_edit_id').value = '';
+  document.getElementById('exp_date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('exp_category').value = 'Housekeeping Supplies';
+  document.getElementById('exp_department').value = 'Front Office';
+  document.getElementById('exp_cash_toggle').checked = false;
+  document.getElementById('exp_vendor').disabled = false;
+  document.getElementById('exp_addvendor_btn').style.display = '';
+  populateVendorSelect();
+  document.getElementById('exp_vendor').value = '';
+  document.getElementById('exp_paymentmethod').value = 'Cash';
+  document.getElementById('exp_description').value = '';
+  document.getElementById('exp_amount').value = '';
+  document.getElementById('exp_gstApplicable').value = 'no';
+  document.getElementById('exp_gstin').value = '';
+  document.getElementById('exp_cgst').value = 0; document.getElementById('exp_sgst').value = 0; document.getElementById('exp_igst').value = 0;
+  document.getElementById('exp_bill_file').value = '';
+  document.getElementById('exp_remarks').value = '';
+  toggleExpenseGSTFields();
+}
+function fileToBase64(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = () => resolve(null); reader.readAsDataURL(file); }); }
+
+async function saveExpense(mode) {
+  const org = getOrg();
+  const vendorId = parseInt(document.getElementById('exp_vendor').value);
+  if (!vendorId) { showToast('Please select a vendor, add a vendor, or check Cash Expense.', true); return; }
+  const description = document.getElementById('exp_description').value.trim();
+  const amount = parseFloat(document.getElementById('exp_amount').value) || 0;
+  if (!description || amount <= 0) { showToast('Description and a valid amount are required.', true); return; }
+  const gstApplicable = document.getElementById('exp_gstApplicable').value === 'yes';
+  const cgst = gstApplicable ? (parseFloat(document.getElementById('exp_cgst').value)||0) : 0;
+  const sgst = gstApplicable ? (parseFloat(document.getElementById('exp_sgst').value)||0) : 0;
+  const igst = gstApplicable ? (parseFloat(document.getElementById('exp_igst').value)||0) : 0;
+  const total = amount + cgst + sgst + igst;
+  const vendor = org.vendors.find(v => v.id === vendorId);
+
+  let billFile = null;
+  const fileInput = document.getElementById('exp_bill_file');
+  if (fileInput.files[0]) billFile = await fileToBase64(fileInput.files[0]);
+
+  const editId = document.getElementById('exp_edit_id').value;
+  let expense;
+  if (editId) {
+    expense = org.expenses.find(x => x.id === parseInt(editId));
+    if (billFile) expense.billFile = billFile;
+  } else {
+    expense = {
+      id: org.nextExpenseSeq, expenseId: 'EXP-' + String(org.nextExpenseSeq).padStart(5,'0'),
+      createdBy: currentUser.username, createdByName: currentUser.name, createdAt: new Date().toLocaleString('en-IN'),
+      history: [], billFile,
+    };
+    org.nextExpenseSeq++;
+    org.expenses.push(expense);
+  }
+
+  expense.date = document.getElementById('exp_date').value;
+  expense.category = document.getElementById('exp_category').value;
+  expense.department = document.getElementById('exp_department').value;
+  expense.vendorId = vendorId;
+  expense.vendorName = vendor ? vendor.name : '';
+  expense.description = description;
+  expense.amount = amount;
+  expense.gstApplicable = gstApplicable;
+  expense.gstin = document.getElementById('exp_gstin').value.trim();
+  expense.cgst = cgst; expense.sgst = sgst; expense.igst = igst; expense.total = total;
+  expense.paymentMethod = document.getElementById('exp_paymentmethod').value;
+  expense.remarks = document.getElementById('exp_remarks').value.trim();
+
+  if (mode === 'Draft') {
+    expense.status = 'Draft';
+    expense.history.push({ action:'Saved as Draft', by: currentUser.name, at: new Date().toLocaleString('en-IN') });
+    showToast('Expense saved as draft.');
+  } else {
+    submitExpenseForApproval(expense);
+    showToast(expense.status === 'Approved' ? 'Expense submitted — no approval required, auto-approved.' : `Expense submitted for approval to ${expense.approverRoleChain[expense.currentLevelIndex]}.`);
+  }
+  saveDB(DB);
+  resetExpenseForm();
+  showExpTab('all');
+}
+function editExpense(expenseId) {
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === expenseId);
+  if (!e) return;
+  if (e.status !== 'Draft' && e.status !== 'Sent Back') { showToast('Only Draft or Sent Back expenses can be edited.', true); return; }
+  showExpTab('create');
+  editingExpenseId = expenseId;
+  document.getElementById('exp_edit_id').value = e.id;
+  document.getElementById('exp_date').value = e.date;
+  document.getElementById('exp_category').value = e.category;
+  document.getElementById('exp_department').value = e.department;
+  populateVendorSelect();
+  document.getElementById('exp_vendor').value = e.vendorId;
+  const org2 = getOrg();
+  document.getElementById('exp_cash_toggle').checked = (e.vendorId === -999);
+  document.getElementById('exp_vendor').disabled = (e.vendorId === -999);
+  document.getElementById('exp_addvendor_btn').style.display = (e.vendorId === -999) ? 'none' : '';
+  document.getElementById('exp_paymentmethod').value = e.paymentMethod;
+  document.getElementById('exp_description').value = e.description;
+  document.getElementById('exp_amount').value = e.amount;
+  document.getElementById('exp_gstApplicable').value = e.gstApplicable ? 'yes' : 'no';
+  document.getElementById('exp_gstin').value = e.gstin;
+  document.getElementById('exp_cgst').value = e.cgst; document.getElementById('exp_sgst').value = e.sgst; document.getElementById('exp_igst').value = e.igst;
+  document.getElementById('exp_remarks').value = e.remarks;
+  toggleExpenseGSTFields();
+}
+function deleteExpense(expenseId) {
+  if (!can('expenses','delete')) { showToast('No permission to delete expenses.', true); return; }
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === expenseId);
+  if (e.status !== 'Draft') { showToast('Only Draft expenses can be deleted.', true); return; }
+  if (!confirm('Delete this draft expense?')) return;
+  org.expenses = org.expenses.filter(x => x.id !== expenseId);
+  saveDB(DB); renderAllExpenses();
+  showToast('Expense deleted.');
+}
+
+/* ---------- Approval Routing ---------- */
+function computeApprovalChain(amount) {
+  const org = getOrg();
+  const s = org.expenseSettings;
+  if (!s.approvalEnabled) return [];
+  if (s.amountBasedEnabled) {
+    const tier = s.tiers.find(t => amount >= t.min && (t.max === null || amount <= t.max));
+    return tier ? tier.roles : [];
+  }
+  return s.hierarchy;
+}
+function submitExpenseForApproval(expense) {
+  const chain = computeApprovalChain(expense.amount);
+  if (chain.length === 0) {
+    expense.status = 'Approved';
+    expense.approverRoleChain = [];
+    expense.currentLevelIndex = -1;
+  } else {
+    expense.approverRoleChain = chain;
+    expense.currentLevelIndex = 0;
+    expense.status = 'Pending Approval';
+  }
+  expense.history.push({ action:'Submitted for approval', by: currentUser.name, at: new Date().toLocaleString('en-IN'), note: chain.length ? `Routed to ${chain[0]}` : 'Auto-approved (no hierarchy enabled)' });
+}
+function approveExpense(expenseId) {
+  if (!can('expenses','approve')) { showToast('No permission to approve expenses.', true); return; }
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === expenseId);
+  const requiredRole = e.approverRoleChain[e.currentLevelIndex];
+  if (currentUser.jobRole !== requiredRole) { showToast(`This expense currently requires approval from: ${requiredRole}.`, true); return; }
+  if (e.createdBy === currentUser.username) { showToast('You cannot approve your own expense.', true); return; }
+  if (!confirm(`Approve expense ${e.expenseId} for ${inr(e.total)}?`)) return;
+  e.history.push({ action:`Approved (${requiredRole})`, by: currentUser.name, at: new Date().toLocaleString('en-IN') });
+  e.currentLevelIndex++;
+  if (e.currentLevelIndex >= e.approverRoleChain.length) {
+    e.status = 'Approved';
+    showToast('Expense fully approved.');
+  } else {
+    showToast(`Approved — routed to ${e.approverRoleChain[e.currentLevelIndex]}.`);
+  }
+  saveDB(DB); renderPendingApproval(); renderAllExpenses();
+}
+function openRejectExpense(expenseId) {
+  if (!can('expenses','reject')) { showToast('No permission to reject expenses.', true); return; }
+  window._rejectTargetId = expenseId;
+  document.getElementById('rej_reason_select').value = 'Duplicate bill';
+  document.getElementById('rej_reason_text').value = '';
+  new bootstrap.Modal(document.getElementById('rejectExpenseModal')).show();
+}
+function confirmRejectExpense() {
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === window._rejectTargetId);
+  const reason = document.getElementById('rej_reason_select').value + (document.getElementById('rej_reason_text').value.trim() ? ' — ' + document.getElementById('rej_reason_text').value.trim() : '');
+  e.status = 'Rejected'; e.rejectedBy = currentUser.name; e.rejectedAt = new Date().toLocaleString('en-IN'); e.rejectReason = reason;
+  e.history.push({ action:'Rejected', by: currentUser.name, at: e.rejectedAt, note: reason });
+  saveDB(DB);
+  bootstrap.Modal.getInstance(document.getElementById('rejectExpenseModal')).hide();
+  renderPendingApproval(); renderAllExpenses();
+  showToast('Expense rejected.');
+}
+function openSendBackExpense(expenseId) {
+  if (!can('expenses','sendback')) { showToast('No permission to send back expenses.', true); return; }
+  window._sendbackTargetId = expenseId;
+  document.getElementById('sb_reason_text').value = '';
+  new bootstrap.Modal(document.getElementById('sendBackExpenseModal')).show();
+}
+function confirmSendBackExpense() {
+  const reason = document.getElementById('sb_reason_text').value.trim();
+  if (!reason) { showToast('Correction reason is required.', true); return; }
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === window._sendbackTargetId);
+  e.status = 'Sent Back'; e.sentBackReason = reason;
+  e.history.push({ action:'Sent back for correction', by: currentUser.name, at: new Date().toLocaleString('en-IN'), note: reason });
+  saveDB(DB);
+  bootstrap.Modal.getInstance(document.getElementById('sendBackExpenseModal')).hide();
+  renderPendingApproval(); renderAllExpenses();
+  showToast('Expense sent back to creator.');
+}
+function resubmitExpense(expenseId) {
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === expenseId);
+  if (e.createdBy !== currentUser.username) { showToast('Only the creator can resubmit this expense.', true); return; }
+  submitExpenseForApproval(e);
+  saveDB(DB); renderAllExpenses();
+  showToast('Expense resubmitted.');
+}
+function openMarkExpensePaid(expenseId) {
+  if (!can('expenses','markpaid')) { showToast('No permission to mark expenses as paid.', true); return; }
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === expenseId);
+  if (e.status !== 'Approved') { showToast('Only Approved expenses can be marked as paid.', true); return; }
+  window._markPaidTargetId = expenseId;
+  document.getElementById('mep_date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('mep_method').value = 'Bank Transfer';
+  document.getElementById('mep_ref').value = '';
+  document.getElementById('mep_amount').value = e.total;
+  document.getElementById('mep_remarks').value = '';
+  new bootstrap.Modal(document.getElementById('markExpensePaidModal')).show();
+}
+function confirmMarkExpensePaid() {
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === window._markPaidTargetId);
+  const amount = parseFloat(document.getElementById('mep_amount').value) || 0;
+  if (amount <= 0) { showToast('Enter a valid paid amount.', true); return; }
+  e.status = 'Paid';
+  e.paymentDate = document.getElementById('mep_date').value;
+  e.paymentMethodPaid = document.getElementById('mep_method').value;
+  e.transactionRef = document.getElementById('mep_ref').value.trim();
+  e.paidAmount = amount;
+  e.paymentRemarks = document.getElementById('mep_remarks').value.trim();
+  e.history.push({ action:'Marked as Paid', by: currentUser.name, at: new Date().toLocaleString('en-IN'), note: `₹${amount} via ${e.paymentMethodPaid}` });
+  saveDB(DB);
+  bootstrap.Modal.getInstance(document.getElementById('markExpensePaidModal')).hide();
+  renderAllExpenses();
+  showToast('Expense marked as paid.');
+}
+function viewExpense(expenseId) {
+  const org = getOrg();
+  const e = org.expenses.find(x => x.id === expenseId);
+  document.getElementById('viewExpenseBody').innerHTML = `
+    <div class="row g-2 mb-3">
+      <div class="col-md-6"><b>Expense ID:</b> ${e.expenseId}</div>
+      <div class="col-md-6"><b>Status:</b> ${expBadge(e.status)}</div>
+      <div class="col-md-6"><b>Date:</b> ${e.date}</div>
+      <div class="col-md-6"><b>Vendor:</b> ${e.vendorName}</div>
+      <div class="col-md-6"><b>Category:</b> ${e.category}</div>
+      <div class="col-md-6"><b>Department:</b> ${e.department}</div>
+      <div class="col-md-6"><b>Amount:</b> ${inr(e.amount)}</div>
+      <div class="col-md-6"><b>GST:</b> ${e.gstApplicable ? `CGST ${inr(e.cgst)}, SGST ${inr(e.sgst)}, IGST ${inr(e.igst)}` : 'Not Applicable'}</div>
+      <div class="col-md-6"><b>Total:</b> ${inr(e.total)}</div>
+      <div class="col-md-6"><b>Payment Method:</b> ${e.paymentMethod}</div>
+      <div class="col-12"><b>Description:</b> ${e.description}</div>
+      <div class="col-12"><b>Remarks:</b> ${e.remarks || '—'}</div>
+      ${e.billFile ? `<div class="col-12"><b>Bill:</b> <a href="${e.billFile}" download="${e.expenseId}-bill">Download attached bill</a></div>` : ''}
+    </div>
+    <h6 class="fw-bold">History</h6>
+    <table><thead><tr><th>Action</th><th>By</th><th>At</th><th>Note</th></tr></thead>
+    <tbody>${(e.history||[]).map(h => `<tr><td>${h.action}</td><td>${h.by}</td><td>${h.at}</td><td>${h.note||''}</td></tr>`).join('')}</tbody></table>
+  `;
+  new bootstrap.Modal(document.getElementById('viewExpenseModal')).show();
+}
+function expBadge(status) {
+  const map = { 'Draft':'exp-draft', 'Pending Approval':'exp-pending', 'Approved':'exp-approved', 'Rejected':'exp-rejected', 'Sent Back':'exp-sentback', 'Paid':'exp-paid' };
+  return `<span class="exp-badge ${map[status]||'exp-draft'}">${status}</span>`;
+}
+function renderAllExpenses() {
+  const org = getOrg();
+  document.getElementById('allExpensesBody').innerHTML = org.expenses.slice().reverse().map(e => {
+    let actions = `<button class="btn btn-sm btn-outline-secondary" onclick="viewExpense(${e.id})"><i class="bi bi-eye"></i></button> `;
+    if ((e.status === 'Draft' || e.status === 'Sent Back') && e.createdBy === currentUser.username && can('expenses','edit')) {
+      actions += `<button class="btn btn-sm btn-outline-secondary" onclick="editExpense(${e.id})"><i class="bi bi-pencil"></i></button> `;
+    }
+    if (e.status === 'Sent Back' && e.createdBy === currentUser.username) {
+      actions += `<button class="btn btn-sm btn-brand" onclick="resubmitExpense(${e.id})">Resubmit</button> `;
+    }
+    if (e.status === 'Draft' && can('expenses','delete')) {
+      actions += `<button class="btn btn-sm btn-outline-danger" onclick="deleteExpense(${e.id})"><i class="bi bi-trash"></i></button> `;
+    }
+    if (e.status === 'Approved' && can('expenses','markpaid')) {
+      actions += `<button class="btn btn-sm btn-outline-primary" onclick="openMarkExpensePaid(${e.id})">Mark Paid</button>`;
+    }
+    return `<tr><td>${e.expenseId}</td><td>${e.date}</td><td>${e.vendorName}</td><td>${e.category}</td><td>${inr(e.total)}</td><td>${expBadge(e.status)}</td><td>${actions}</td></tr>`;
+  }).join('') || `<tr><td colspan="7" class="text-center text-muted py-3">No expenses yet.</td></tr>`;
+}
+function renderPendingApproval() {
+  const org = getOrg();
+  const list = org.expenses.filter(e => e.status === 'Pending Approval' && e.approverRoleChain[e.currentLevelIndex] === currentUser.jobRole && e.createdBy !== currentUser.username);
+  document.getElementById('pendingApprovalBody').innerHTML = list.map(e => `
+    <tr><td>${e.expenseId}</td><td>${e.date}</td><td>${e.vendorName}</td><td>${e.category}</td><td>${inr(e.total)}</td>
+    <td>${e.createdByName}</td><td>${e.approverRoleChain[e.currentLevelIndex]} (${e.currentLevelIndex+1}/${e.approverRoleChain.length})</td>
+    <td>
+      <button class="btn btn-sm btn-outline-secondary" onclick="viewExpense(${e.id})"><i class="bi bi-eye"></i></button>
+      ${can('expenses','approve') ? `<button class="btn btn-sm btn-success" onclick="approveExpense(${e.id})">Approve</button>` : ''}
+      ${can('expenses','reject') ? `<button class="btn btn-sm btn-outline-danger" onclick="openRejectExpense(${e.id})">Reject</button>` : ''}
+      ${can('expenses','sendback') ? `<button class="btn btn-sm btn-outline-secondary" onclick="openSendBackExpense(${e.id})">Send Back</button>` : ''}
+    </td></tr>`).join('') || `<tr><td colspan="8" class="text-center text-muted py-3">Nothing requires your action right now.</td></tr>`;
+}
+
+/* ---------- Expense Approval Settings (Administration) ---------- */
+function openExpenseApprovalSettings() {
+  if (currentUser.role !== 'Owner') { showToast('Only an Owner can configure expense approval.', true); return; }
+  const org = getOrg();
+  const s = org.expenseSettings;
+  document.getElementById('eas_enabled').checked = s.approvalEnabled;
+  document.getElementById('eas_role_checks').innerHTML = DESIGNATIONS.map((r,i) => `
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="eas_role_${i}" value="${r}" ${s.hierarchy.includes(r)?'checked':''}>
+      <label class="form-check-label">${r}</label>
+    </div>`).join('') + `<div class="text-muted small mt-1">Check the levels in the order you want them applied.</div>`;
+  document.getElementById('eas_amount_enabled').checked = s.amountBasedEnabled;
+  renderAmountTiers(s.tiers.length ? s.tiers : [{min:0,max:5000,roles:[]}]);
+  toggleExpenseApprovalUI(); toggleAmountTiersUI();
+  bootstrap.Modal.getInstance(document.getElementById('adminModal'))?.hide();
+  new bootstrap.Modal(document.getElementById('expenseApprovalSettingsModal')).show();
+}
+function toggleExpenseApprovalUI() { document.getElementById('eas_hierarchy_box').style.display = document.getElementById('eas_enabled').checked ? 'block' : 'none'; }
+function toggleAmountTiersUI() { document.getElementById('eas_amount_tiers_box').style.display = document.getElementById('eas_amount_enabled').checked ? 'block' : 'none'; }
+let tempTiers = [];
+function renderAmountTiers(tiers) { tempTiers = JSON.parse(JSON.stringify(tiers)); drawAmountTiers(); }
+function drawAmountTiers() {
+  document.getElementById('eas_tiers_list').innerHTML = tempTiers.map((t,i) => `
+    <div class="row g-2 mb-2 align-items-center border-bottom pb-2">
+      <div class="col-md-3"><label class="form-label small">Min (₹)</label><input type="number" class="form-control form-control-sm" value="${t.min}" onchange="tempTiers[${i}].min=parseFloat(this.value)||0"></div>
+      <div class="col-md-3"><label class="form-label small">Max (₹, blank = no limit)</label><input type="number" class="form-control form-control-sm" value="${t.max===null?'':t.max}" onchange="tempTiers[${i}].max=this.value===''?null:parseFloat(this.value)"></div>
+      <div class="col-md-5"><label class="form-label small">Approval Roles (in order)</label>
+        <div class="d-flex flex-wrap gap-2">
+          ${DESIGNATIONS.map(r => `<label class="small"><input type="checkbox" ${t.roles.includes(r)?'checked':''} onchange="toggleTierRole(${i},'${r}',this.checked)"> ${r}</label>`).join('')}
+        </div>
+      </div>
+      <div class="col-md-1"><button class="btn btn-sm btn-outline-danger" onclick="removeTier(${i})"><i class="bi bi-trash"></i></button></div>
+    </div>`).join('');
+}
+function toggleTierRole(idx, role, checked) {
+  const roles = tempTiers[idx].roles;
+  if (checked && !roles.includes(role)) roles.push(role);
+  if (!checked) tempTiers[idx].roles = roles.filter(r => r !== role);
+}
+function addAmountTier() { tempTiers.push({min:0,max:null,roles:[]}); drawAmountTiers(); }
+function removeTier(idx) { tempTiers.splice(idx,1); drawAmountTiers(); }
+function saveExpenseApprovalSettings() {
+  const org = getOrg();
+  const s = org.expenseSettings;
+  s.approvalEnabled = document.getElementById('eas_enabled').checked;
+  s.hierarchy = DESIGNATIONS.filter((r,i) => document.getElementById('eas_role_'+i).checked);
+  s.amountBasedEnabled = document.getElementById('eas_amount_enabled').checked;
+  s.tiers = tempTiers;
+  saveDB(DB);
+  logAudit('Updated Expense Approval Settings');
+  bootstrap.Modal.getInstance(document.getElementById('expenseApprovalSettingsModal')).hide();
+  showToast('Expense approval settings saved.');
+}
+
+/* ================= APPLY PERMISSIONS ================= */
+function applyPermissionsToUI() {
+  document.querySelectorAll('.nav-link[data-module]').forEach(nav => { nav.style.display = can(nav.dataset.module, 'view') ? 'flex' : 'none'; });
+  document.getElementById('userAccessMenuBtn').style.display = currentUser.role === 'Owner' ? 'block' : 'none';
+  document.getElementById('businessSettingsMenuBtn').style.display = currentUser.role === 'Owner' ? 'block' : 'none';
+  document.getElementById('expenseApprovalMenuBtn').style.display = currentUser.role === 'Owner' ? 'block' : 'none';
+  document.getElementById('paymentSettingsMenuBtn').style.display = can('paymentSettings','view') ? 'block' : 'none';
+  document.getElementById('whatsappSettingsMenuBtn').style.display = can('whatsappSettings','view') ? 'block' : 'none';
+  toggleEl('addRoomBtn', can('rooms','create'));
+  toggleEl('roomMasterBtn', can('rooms','edit') || can('rooms','delete'));
+  toggleEl('addGuestBtn', can('guests','create'));
+  toggleEl('addBookingBtn', can('bookings','create'));
+  const firstAllowed = ['dashboard','rooms','guests','bookings','billing','expenses','reports'].find(m => can(m,'view'));
+  if (firstAllowed && !can('dashboard','view')) showPage(firstAllowed);
+}
+function toggleEl(id, visible) { const el = document.getElementById(id); if (el) el.style.display = visible ? '' : 'none'; }
+
+function showPage(page) {
+  const permMap = { paymentsAdmin:'paymentSettings', whatsappAdmin:'whatsappSettings' };
+  const permKey = permMap[page] || page;
+  if (!can(permKey, 'view')) { showToast('You do not have access to this section.', true); return; }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link[data-page]').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navEl = document.querySelector(`.nav-link[data-page="${page}"]`);
+  if (navEl) navEl.classList.add('active');
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'rooms') renderRooms();
+  if (page === 'guests') renderGuests();
+  if (page === 'bookings') renderBookings();
+  if (page === 'billing') { renderBillingQueue(); renderInvoiceList(); }
+  if (page === 'expenses') loadExpensePageDefaults();
+  if (page === 'reports') toggleReportViewOptions();
+  if (page === 'paymentsAdmin') renderPaymentSettingsPage();
+  if (page === 'whatsappAdmin') renderWhatsAppSettingsPage();
+}
+function initApp() {
+  applyHotelName();
+  applyUserMenu();
+  applyPermissionsToUI();
+  renderDashboard(); renderRooms(); renderGuests(); renderBookings(); renderBillingQueue(); renderInvoiceList();
+  document.getElementById('exp_date') && (document.getElementById('exp_date').value = new Date().toISOString().slice(0,10));
+}
+
+/* ================= DASHBOARD (+ financial widgets) ================= */
+function renderDashboard() {
+  const today = new Date().toISOString().slice(0,10);
+  const todayInvoices = DB.invoices.filter(i => i.date === today);
+  const todayRevenue = todayInvoices.reduce((s,i) => s + i.total, 0);
+  const occupied = DB.rooms.filter(r => r.status === 'occupied').length;
+  const vacant = DB.rooms.filter(r => r.status === 'vacant').length;
+  const occPercent = DB.rooms.length ? Math.round((occupied / DB.rooms.length) * 100) : 0;
+  const pending = DB.invoices.filter(i => i.outstanding > 0).reduce((s,i) => s + i.outstanding, 0);
+  const gstToday = todayInvoices.reduce((s,i) => s + i.cgst + i.sgst + i.igst, 0);
+  const kpiMeta = [
+    { label:"Today's Revenue", icon:'bi-cash-coin', color:'teal', value:'₹'+todayRevenue.toLocaleString('en-IN') },
+    { label:'Occupancy %', icon:'bi-door-open', color:'blue', value:occPercent+'%' },
+    { label:'Vacant Rooms', icon:'bi-door-closed', color:'green', value:vacant },
+    { label:'Pending Payments', icon:'bi-hourglass-split', color:'coral', value:'₹'+pending.toLocaleString('en-IN') },
+    { label:'GST Collected Today', icon:'bi-receipt-cutoff', color:'purple', value:'₹'+gstToday.toLocaleString('en-IN') },
+    { label:'Total Bookings', icon:'bi-calendar-check', color:'amber', value:DB.bookings.length },
+    { label:'Checked-in', icon:'bi-person-check', color:'pink', value:DB.bookings.filter(b=>b.status==='checked_in').length },
+    { label:'Total Guests', icon:'bi-people', color:'gray', value:DB.guests.length },
+  ];
+  document.getElementById('kpiGrid').innerHTML = kpiMeta.map(m => `<div class="kpi-card k-${m.color}"><div class="icon"><i class="bi ${m.icon}"></i></div><div class="label">${m.label}</div><div class="value">${m.value}</div></div>`).join('');
+  const last7 = [...Array(7)].map((_,i) => { const d = new Date(); d.setDate(d.getDate() - (6-i)); return d.toISOString().slice(0,10); });
+  const revByDay = last7.map(d => DB.invoices.filter(i=>i.date===d).reduce((s,i)=>s+i.total,0));
+  if (window.revChart) window.revChart.destroy();
+  window.revChart = new Chart(document.getElementById('revenueChart'), { type: 'line', data: { labels: last7.map(d=>d.slice(5)), datasets:[{ label:'Revenue', data:revByDay, borderColor:'#0d9488', backgroundColor:'rgba(13,148,136,0.1)', fill:true, tension:0.4 }] }, options: { plugins:{legend:{display:false}} } });
+  const sourceCounts = {};
+  DB.bookings.forEach(b => { sourceCounts[b.source] = (sourceCounts[b.source]||0)+1; });
+  if (window.srcChart) window.srcChart.destroy();
+  window.srcChart = new Chart(document.getElementById('sourceChart'), { type: 'doughnut', data: { labels: Object.keys(sourceCounts), datasets:[{ data: Object.values(sourceCounts), backgroundColor:['#2563eb','#0d9488','#f97316','#7c3aed','#db2777','#d97706'] }] }, options: { plugins:{legend:{position:'bottom'}} } });
+
+  renderExpenseTrendChart(last7);
+  renderCashFlowTable(last7);
+}
+function renderExpenseTrendChart(last7) {
+  const org = getOrg();
+  const expByDay = last7.map(d => org.expenses.filter(e => e.date === d && e.status !== 'Rejected' && e.status !== 'Draft').reduce((s,e)=>s+e.amount,0));
+  if (window.expTrendChart) window.expTrendChart.destroy();
+  window.expTrendChart = new Chart(document.getElementById('expenseTrendChart'), {
+    type: 'bar', data: { labels: last7.map(d=>d.slice(5)), datasets:[{ label:'Expenses', data:expByDay, backgroundColor:'#f97316' }] },
+    options: { plugins:{legend:{display:false}} }
+  });
+}
+function renderCashFlowTable(last7) {
+  const org = getOrg();
+  let running = 0;
+  const rows = last7.map(d => {
+    const cashIn = DB.invoices.filter(i=>i.date===d).reduce((s,i)=>s+i.total,0);
+    const cashOut = org.expenses.filter(e => e.status === 'Paid' && e.paymentDate === d).reduce((s,e)=>s+(e.paidAmount||e.total),0);
+    const net = cashIn - cashOut;
+    running += net;
+    return { d, cashIn, cashOut, net, running };
+  });
+  document.getElementById('cashFlowTable').innerHTML = `
+    <table><thead><tr><th>Date</th><th>Cash In</th><th>Cash Out</th><th>Net</th><th>Running Balance</th></tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${r.d.slice(5)}</td><td>${inr(r.cashIn)}</td><td>${inr(r.cashOut)}</td>
+      <td style="color:${r.net>=0?'#16a34a':'#dc2626'}">${inr(r.net)}</td><td>${inr(r.running)}</td></tr>`).join('')}</tbody></table>`;
+}
+
+/* ================= ROOMS ================= */
+function renderRooms() {
+  document.getElementById('roomGrid').innerHTML = DB.rooms.map(r => `
+    <div class="room-card ${r.status}" onclick="openStatusModal(${r.id})">
+      <div class="d-flex justify-content-between"><b>${r.number}</b><span class="status-badge ${r.status}">${r.status}</span></div>
+      <div class="text-muted small">${r.type} · Floor ${r.floor}</div>
+      <div class="small">₹${r.rate.toLocaleString('en-IN')}</div>
+    </div>`).join('');
+}
+function openRoomMasterModal() {
+  if (!can('rooms','edit') && !can('rooms','delete')) { showToast('No permission to manage rooms.', true); return; }
+  renderRoomMaster();
+  new bootstrap.Modal(document.getElementById('roomMasterModal')).show();
+}
+function renderRoomMaster() {
+  document.getElementById('masterAddRoomBtn').style.display = can('rooms','create') ? '' : 'none';
+  document.getElementById('roomMasterBody').innerHTML = DB.rooms.map(r => `
+    <tr title="${(r.details||'').replace(/"/g,'&quot;')}">
+      <td>${r.number}</td><td>${r.type}</td><td>${r.floor}</td><td>₹${r.rate.toLocaleString('en-IN')}</td>
+      <td><span class="status-badge ${r.status}">${r.status}</span></td>
+      <td>
+        ${can('rooms','edit') ? `<button class="btn btn-sm btn-outline-secondary" onclick="bootstrap.Modal.getInstance(document.getElementById('roomMasterModal')).hide(); openEditRoomModal(${r.id});"><i class="bi bi-pencil"></i></button>` : ''}
+        ${can('rooms','delete') ? `<button class="btn btn-sm btn-outline-danger" onclick="deleteRoom(${r.id})"><i class="bi bi-trash"></i></button>` : ''}
+      </td>
+    </tr>`).join('') || `<tr><td colspan="6" class="text-center text-muted py-3">No rooms yet.</td></tr>`;
+}
+const DEFAULT_RATES = { Standard: 1800, Deluxe: 2800, Suite: 4500, 'Party Hall': 15000, 'Banquet': 25000 };
+function suggestRoomRate() { if (document.getElementById('r_edit_id').value) return; document.getElementById('r_rate').value = DEFAULT_RATES[document.getElementById('r_type').value]; }
+function openCreateRoomModal() {
+  if (!can('rooms','create')) { showToast('No permission to add rooms.', true); return; }
+  document.getElementById('roomModalTitle').textContent = 'Add Room';
+  document.getElementById('r_edit_id').value = '';
+  document.getElementById('r_number').value = '';
+  document.getElementById('r_type').value = 'Standard';
+  document.getElementById('r_rate').value = DEFAULT_RATES.Standard;
+  document.getElementById('r_floor').value = '';
+  document.getElementById('r_details').value = '';
+  new bootstrap.Modal(document.getElementById('roomModal')).show();
+}
+function openEditRoomModal(id) {
+  if (!can('rooms','edit')) { showToast('No permission to edit rooms.', true); return; }
+  const r = DB.rooms.find(x => x.id === id);
+  document.getElementById('roomModalTitle').textContent = 'Edit Room';
+  document.getElementById('r_edit_id').value = id;
+  document.getElementById('r_number').value = r.number;
+  document.getElementById('r_type').value = r.type;
+  document.getElementById('r_rate').value = r.rate;
+  document.getElementById('r_floor').value = r.floor;
+  document.getElementById('r_details').value = r.details || '';
+  new bootstrap.Modal(document.getElementById('roomModal')).show();
+}
+function saveRoom() {
+  const editId = document.getElementById('r_edit_id').value;
+  if (editId && !can('rooms','edit')) { showToast('No permission to edit rooms.', true); return; }
+  if (!editId && !can('rooms','create')) { showToast('No permission to add rooms.', true); return; }
+  const number = document.getElementById('r_number').value.trim();
+  const type = document.getElementById('r_type').value;
+  const rate = parseFloat(document.getElementById('r_rate').value) || 0;
+  const floor = parseInt(document.getElementById('r_floor').value) || 1;
+  const details = document.getElementById('r_details').value.trim();
+  if (!number) { showToast('Room number is required.', true); return; }
+  if (rate <= 0) { showToast('Enter a valid room rate.', true); return; }
+  const dup = DB.rooms.find(r => r.number === number && String(r.id) !== editId);
+  if (dup) { showToast('Room number already exists.', true); return; }
+  if (editId) {
+    const r = DB.rooms.find(x => x.id === parseInt(editId));
+    r.number = number; r.type = type; r.rate = rate; r.floor = floor; r.details = details;
+    showToast('Room updated.');
+  } else {
+    DB.rooms.push({ id: DB.nextId.room++, number, type, rate, floor, status: 'vacant', details });
+    showToast('Room added.');
+  }
+  saveDB(DB); renderRooms(); renderRoomMaster();
+  bootstrap.Modal.getInstance(document.getElementById('roomModal')).hide();
+}
+function deleteRoom(id) {
+  if (!can('rooms','delete')) { showToast('No permission to delete rooms.', true); return; }
+  const room = DB.rooms.find(r => r.id === id);
+  if (DB.bookings.some(b => b.roomId === id && ['confirmed','checked_in'].includes(b.status))) { showToast('Cannot delete a room with active or upcoming bookings.', true); return; }
+  if (!confirm(`Delete room ${room.number}? This cannot be undone.`)) return;
+  DB.rooms = DB.rooms.filter(r => r.id !== id);
+  saveDB(DB); renderRooms(); renderRoomMaster();
+  showToast('Room deleted.');
+}
+let statusRoomId = null;
+function openStatusModal(id) { statusRoomId = id; new bootstrap.Modal(document.getElementById('statusModal')).show(); }
+function changeRoomStatus(status) {
+  if (!can('rooms','edit')) { showToast('No permission to change room status.', true); return; }
+  const room = DB.rooms.find(r => r.id === statusRoomId);
+  room.status = status;
+  saveDB(DB); renderRooms(); renderRoomMaster();
+  bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
+  showToast(`Room ${room.number} set to ${status}.`);
+}
+
+/* ================= GUESTS ================= */
+function renderGuests() {
+  const q = (document.getElementById('guestSearch').value || '').trim().toLowerCase();
+  const list = DB.guests.filter(g => !q || g.name.toLowerCase().includes(q) || g.mobile.includes(q) || g.idNum.toLowerCase().includes(q) || (g.gstin||'').toLowerCase().includes(q));
+  document.getElementById('guestTableBody').innerHTML = list.map(g => `
+    <tr><td>${g.name}</td><td>${g.mobile}</td><td>${g.city||'—'}</td><td>${g.idType}: ${g.idNum}</td>
+    <td>${g.gstin || '<span class="text-muted">Unregistered</span>'}</td>
+    <td>${new Date(g.createdAt).toLocaleDateString('en-IN')}</td>
+    <td>
+      ${can('guests','edit') ? `<button class="btn btn-sm btn-outline-secondary" onclick="openEditGuestModal(${g.id})"><i class="bi bi-pencil"></i></button>` : ''}
+      ${can('guests','delete') ? `<button class="btn btn-sm btn-outline-danger" onclick="deleteGuest(${g.id})"><i class="bi bi-trash"></i></button>` : ''}
+    </td></tr>`).join('') || `<tr><td colspan="7" class="text-center text-muted py-3">No guests match.</td></tr>`;
+}
+function openCreateGuestModal() {
+  if (!can('guests','create')) { showToast('No permission to add guests.', true); return; }
+  document.getElementById('guestModalTitle').textContent = 'New Guest';
+  document.getElementById('g_edit_id').value = '';
+  ['g_name','g_mobile','g_address','g_city','g_idnum','g_gstin'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('g_state').value = 'Karnataka';
+  document.getElementById('g_idtype').value = 'Aadhaar';
+  updateIdPlaceholder();
+}
+function openEditGuestModal(id) {
+  if (!can('guests','edit')) { showToast('No permission to edit guests.', true); return; }
+  const g = DB.guests.find(x => x.id === id);
+  document.getElementById('guestModalTitle').textContent = 'Edit Guest';
+  document.getElementById('g_edit_id').value = id;
+  document.getElementById('g_name').value = g.name;
+  document.getElementById('g_mobile').value = g.mobile;
+  document.getElementById('g_address').value = g.address || '';
+  document.getElementById('g_city').value = g.city || '';
+  document.getElementById('g_state').value = g.state || 'Karnataka';
+  document.getElementById('g_idtype').value = g.idType;
+  document.getElementById('g_idnum').value = g.idNum;
+  document.getElementById('g_gstin').value = g.gstin || '';
+  updateIdPlaceholder();
+  new bootstrap.Modal(document.getElementById('guestModal')).show();
+}
+function saveGuest() {
+  const editId = document.getElementById('g_edit_id').value;
+  if (editId && !can('guests','edit')) { showToast('No permission to edit guests.', true); return; }
+  if (!editId && !can('guests','create')) { showToast('No permission to add guests.', true); return; }
+  const name = document.getElementById('g_name').value.trim();
+  const mobile = document.getElementById('g_mobile').value.trim();
+  const address = document.getElementById('g_address').value.trim();
+  const idType = document.getElementById('g_idtype').value;
+  const idNum = document.getElementById('g_idnum').value.trim();
+  const gstin = document.getElementById('g_gstin').value.trim();
+  if (!name || !/^[6-9]\d{9}$/.test(mobile) || !idNum) { showToast('Name, valid 10-digit mobile, and ID number are required.', true); return; }
+  const idCheck = validateIdNumber(idType, idNum);
+  if (!idCheck.ok) { showToast(idCheck.message, true); return; }
+  const gstCheck = validateGSTIN(gstin);
+  if (!gstCheck.ok) { showToast(gstCheck.message, true); return; }
+  if (editId) {
+    const g = DB.guests.find(x => x.id === parseInt(editId));
+    g.name = name; g.mobile = mobile; g.address = address;
+    g.city = document.getElementById('g_city').value.trim();
+    g.state = document.getElementById('g_state').value.trim() || 'Karnataka';
+    g.idType = idType; g.idNum = idNum; g.gstin = gstin;
+    showToast('Guest updated.');
+  } else {
+    DB.guests.push({ id: DB.nextId.guest++, name, mobile, address, city: document.getElementById('g_city').value.trim(), state: document.getElementById('g_state').value.trim() || 'Karnataka', idType, idNum, gstin, createdAt: new Date().toISOString() });
+    showToast('Guest registered.');
+  }
+  saveDB(DB); renderGuests();
+  bootstrap.Modal.getInstance(document.getElementById('guestModal')).hide();
+}
+function deleteGuest(id) {
+  if (!can('guests','delete')) { showToast('No permission to delete guests.', true); return; }
+  if (DB.bookings.some(b => b.guestId === id)) { showToast('Cannot delete a guest with booking history.', true); return; }
+  if (!confirm('Delete this guest permanently?')) return;
+  DB.guests = DB.guests.filter(g => g.id !== id);
+  saveDB(DB); renderGuests();
+  showToast('Guest deleted.');
+}
+
+/* ================= BOOKINGS ================= */
+function isRoomAvailable(roomId, checkIn, checkOut, excludeBookingId = null) {
+  return !DB.bookings.some(b => b.roomId === roomId && b.id !== excludeBookingId && ['confirmed','checked_in'].includes(b.status) && checkIn < b.checkOut && checkOut > b.checkIn);
+}
+function toggleSourceBookingId() {
+  const source = document.getElementById('b_source').value;
+  document.getElementById('sourceBookingIdBox').style.display = source === 'Walk-in' ? 'none' : 'block';
+}
+function resetBookingForm() {
+  if (!can('bookings','create')) { showToast('No permission to create bookings.', true); return; }
+  editingBookingId = null;
+  document.getElementById('bookingModalTitle').textContent = 'New Booking';
+  document.getElementById('b_edit_id').value = '';
+  document.getElementById('b_guest').innerHTML = DB.guests.map(g => `<option value="${g.id}">${g.name} — ${g.mobile}</option>`).join('') || `<option disabled>No guests — register one first</option>`;
+  document.getElementById('b_source').value = 'Walk-in';
+  document.getElementById('b_sourceBookingId').value = '';
+  toggleSourceBookingId();
+  document.getElementById('b_checkin').value = '';
+  document.getElementById('b_checkout').value = '';
+  document.getElementById('b_numguests').value = 1;
+  document.getElementById('b_gstApplicable').value = 'yes';
+  document.getElementById('b_extraPersonCharge').value = 0;
+  document.getElementById('b_earlyMorningCharge').value = 0;
+  document.getElementById('b_advanceAmount').value = 0;
+  document.getElementById('b_advancePaymentMode').value = 'Cash';
+  document.getElementById('availableRoomsBox').innerHTML = '';
+  document.getElementById('currentRoomNote').innerHTML = '';
+  document.getElementById('confirmBookingBtn').disabled = true;
+  document.getElementById('confirmBookingBtn').textContent = 'Select a room first';
+  selectedRoomId = null;
+  renderGuestDetailFields();
+}
+function openEditBookingModal(id) {
+  if (!can('bookings','edit')) { showToast('No permission to edit bookings.', true); return; }
+  const b = DB.bookings.find(x => x.id === id);
+  const room = DB.rooms.find(r => r.id === b.roomId);
+  editingBookingId = id;
+  document.getElementById('bookingModalTitle').textContent = 'Edit Booking';
+  document.getElementById('b_edit_id').value = id;
+  document.getElementById('b_guest').innerHTML = DB.guests.map(g => `<option value="${g.id}" ${g.id===b.guestId?'selected':''}>${g.name} — ${g.mobile}</option>`).join('');
+  document.getElementById('b_source').value = b.source;
+  document.getElementById('b_sourceBookingId').value = b.sourceBookingId || '';
+  toggleSourceBookingId();
+  document.getElementById('b_checkin').value = b.checkIn;
+  document.getElementById('b_checkout').value = b.checkOut;
+  document.getElementById('b_numguests').value = b.numGuests;
+  document.getElementById('b_gstApplicable').value = b.gstApplicable ? 'yes' : 'no';
+  document.getElementById('b_extraPersonCharge').value = b.extraPersonCharge || 0;
+  document.getElementById('b_earlyMorningCharge').value = b.earlyMorningCharge || 0;
+  document.getElementById('b_advanceAmount').value = b.advanceAmount || 0;
+  document.getElementById('b_advancePaymentMode').value = b.advancePaymentMode || 'Cash';
+  document.getElementById('availableRoomsBox').innerHTML = '';
+  document.getElementById('currentRoomNote').innerHTML = `<div class="alert alert-info py-2 mt-2">Currently assigned: Room ${room.number}.</div>`;
+  selectedRoomId = b.roomId;
+  document.getElementById('confirmBookingBtn').disabled = false;
+  document.getElementById('confirmBookingBtn').textContent = 'Update Booking';
+  renderGuestDetailFields();
+  setTimeout(() => {
+    (b.additionalGuests||[]).forEach((ag, i) => {
+      const nEl = document.querySelectorAll('.guest-extra-name')[i];
+      const iEl = document.querySelectorAll('.guest-extra-id')[i];
+      const aEl = document.querySelectorAll('.guest-extra-address')[i];
+      if (nEl) nEl.value = ag.name; if (iEl) iEl.value = ag.idNum; if (aEl) aEl.value = ag.address || '';
+    });
+  }, 0);
+  new bootstrap.Modal(document.getElementById('bookingModal')).show();
+}
+function renderGuestDetailFields() {
+  const n = parseInt(document.getElementById('b_numguests').value) || 1;
+  const box = document.getElementById('guestDetailsBox');
+  if (n <= 1) { box.innerHTML = ''; return; }
+  let html = '<label class="form-label small mt-2 d-block">Additional Guest Details</label>';
+  for (let i = 2; i <= n; i++) {
+    html += `<div class="row g-2 mb-2 align-items-center border-bottom pb-2">
+      <div class="col-md-3"><input class="form-control form-control-sm guest-extra-name" placeholder="Guest ${i} Name"></div>
+      <div class="col-md-3"><input class="form-control form-control-sm guest-extra-id" placeholder="Guest ${i} ID Number"></div>
+      <div class="col-md-3"><input class="form-control form-control-sm guest-extra-address" placeholder="Guest ${i} Address"></div>
+      <div class="col-md-3"><input type="file" accept="image/*" class="form-control form-control-sm guest-extra-doc"></div>
+    </div>`;
+  }
+  html += `<div class="text-muted small mb-2">Photos are optional and stored locally in this browser.</div>`;
+  box.innerHTML = html;
+}
+function findAvailableRooms() {
+  const checkIn = document.getElementById('b_checkin').value;
+  const checkOut = document.getElementById('b_checkout').value;
+  if (!checkIn || !checkOut || checkOut <= checkIn) { showToast('Enter a valid date range.', true); return; }
+  const rooms = DB.rooms.filter(r => r.status === 'vacant' && isRoomAvailable(r.id, checkIn, checkOut, editingBookingId));
+  const box = document.getElementById('availableRoomsBox');
+  if (rooms.length === 0) { box.innerHTML = `<div class="alert alert-warning py-2">No vacant rooms available for these dates.</div>`; return; }
+  box.innerHTML = `<div class="d-flex flex-wrap gap-2 mb-2">` + rooms.map(r => `
+    <div class="border rounded-3 p-2 room-pick" style="cursor:pointer; width:130px;" onclick="pickRoom(${r.id}, this)">
+      <b>${r.number}</b><div class="small text-muted">${r.type}</div><div class="small">₹${r.rate}</div>
+    </div>`).join('') + `</div>`;
+}
+function pickRoom(id, el) {
+  selectedRoomId = id;
+  document.querySelectorAll('.room-pick').forEach(x => x.classList.remove('border-primary','bg-light'));
+  el.classList.add('border-primary','bg-light');
+  const btn = document.getElementById('confirmBookingBtn');
+  btn.disabled = false; btn.textContent = editingBookingId ? 'Update Booking' : 'Confirm Booking';
+}
+async function saveBooking() {
+  const checkIn = document.getElementById('b_checkin').value;
+  const checkOut = document.getElementById('b_checkout').value;
+  if (!selectedRoomId || !isRoomAvailable(selectedRoomId, checkIn, checkOut, editingBookingId)) { showToast('Room not available for these dates.', true); return; }
+  const room = DB.rooms.find(r => r.id === selectedRoomId);
+  const source = document.getElementById('b_source').value;
+  const sourceBookingId = source === 'Walk-in' ? '' : document.getElementById('b_sourceBookingId').value.trim();
+  const nameEls = document.querySelectorAll('.guest-extra-name');
+  const idEls = document.querySelectorAll('.guest-extra-id');
+  const addrEls = document.querySelectorAll('.guest-extra-address');
+  const docEls = document.querySelectorAll('.guest-extra-doc');
+  const additionalGuests = [];
+  for (let i = 0; i < nameEls.length; i++) {
+    let doc = null;
+    if (docEls[i] && docEls[i].files[0]) doc = await fileToBase64(docEls[i].files[0]);
+    additionalGuests.push({ name: nameEls[i].value.trim(), idNum: idEls[i].value.trim(), address: addrEls[i].value.trim(), doc });
+  }
+  const advanceAmount = parseFloat(document.getElementById('b_advanceAmount').value) || 0;
+  const advanceMode = document.getElementById('b_advancePaymentMode').value;
+  if (editingBookingId) {
+    const b = DB.bookings.find(x => x.id === editingBookingId);
+    const oldAdvance = b.advanceAmount || 0;
+    b.guestId = parseInt(document.getElementById('b_guest').value);
+    b.roomId = selectedRoomId; b.source = source; b.sourceBookingId = sourceBookingId;
+    b.checkIn = checkIn; b.checkOut = checkOut;
+    b.numGuests = parseInt(document.getElementById('b_numguests').value)||1;
+    b.additionalGuests = additionalGuests;
+    b.gstApplicable = document.getElementById('b_gstApplicable').value === 'yes';
+    b.extraPersonCharge = parseFloat(document.getElementById('b_extraPersonCharge').value) || 0;
+    b.earlyMorningCharge = parseFloat(document.getElementById('b_earlyMorningCharge').value) || 0;
+    b.advanceAmount = advanceAmount; b.advancePaymentMode = advanceMode;
+    b.rate = room.rate;
+    if (advanceAmount !== oldAdvance) DB.payments.push({ id: Date.now(), bookingId: b.id, type: 'advance-adjustment', mode: advanceMode, amount: advanceAmount - oldAdvance, date: new Date().toISOString().slice(0,10) });
+    showToast('Booking updated.');
+    saveDB(DB); renderBookings();
+    bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+  } else {
+    const newId = DB.nextId.booking++;
+    DB.bookings.push({
+      id: newId, guestId: parseInt(document.getElementById('b_guest').value),
+      roomId: selectedRoomId, source, sourceBookingId,
+      checkIn, checkOut, numGuests: parseInt(document.getElementById('b_numguests').value)||1,
+      additionalGuests,
+      gstApplicable: document.getElementById('b_gstApplicable').value === 'yes',
+      extraPersonCharge: parseFloat(document.getElementById('b_extraPersonCharge').value) || 0,
+      earlyMorningCharge: parseFloat(document.getElementById('b_earlyMorningCharge').value) || 0,
+      advanceAmount, advancePaymentMode: advanceMode,
+      rate: room.rate, status: 'confirmed', actualCheckIn: null, actualCheckOut: null
+    });
+    if (advanceAmount > 0) DB.payments.push({ id: Date.now(), bookingId: newId, type: 'advance', mode: advanceMode, amount: advanceAmount, date: new Date().toISOString().slice(0,10) });
+    showToast('Booking confirmed.');
+    saveDB(DB); renderBookings();
+    bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+    const g = DB.guests.find(x => x.id === parseInt(document.getElementById('b_guest').value));
+    offerWelcomeWhatsApp(g.name, g.mobile, newId, checkIn, checkOut, room.number);
+  }
+}
+function applyBookingFilter() { bookingDateFilter.start = document.getElementById('bk_filter_start').value; bookingDateFilter.end = document.getElementById('bk_filter_end').value; renderBookings(); }
+function clearBookingFilter() { bookingDateFilter = { start:'', end:'' }; document.getElementById('bk_filter_start').value = ''; document.getElementById('bk_filter_end').value = ''; renderBookings(); }
+function getFilteredBookingsForDisplay() { return DB.bookings.filter(b => (!bookingDateFilter.start || b.checkIn >= bookingDateFilter.start) && (!bookingDateFilter.end || b.checkIn <= bookingDateFilter.end)); }
+function renderBookings() {
+  const list = getFilteredBookingsForDisplay();
+  document.getElementById('bookingTableBody').innerHTML = list.slice().reverse().map(b => {
+    const guest = DB.guests.find(g => g.id === b.guestId);
+    const room = DB.rooms.find(r => r.id === b.roomId);
+    let actions = '';
+    if (b.status === 'confirmed') {
+      if (can('bookings','edit')) actions += `<button class="btn btn-sm btn-success" onclick="checkIn(${b.id})">Check In</button> <button class="btn btn-sm btn-outline-secondary" onclick="openEditBookingModal(${b.id})"><i class="bi bi-pencil"></i></button> `;
+      if (can('bookings','delete') || can('bookings','edit')) actions += `<button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${b.id})">Cancel</button> `;
+    }
+    if (b.status === 'checked_in' && can('bookings','edit')) actions += `<button class="btn btn-sm btn-primary" onclick="checkOut(${b.id})">Check Out</button> <button class="btn btn-sm btn-outline-secondary" onclick="openEditBookingModal(${b.id})"><i class="bi bi-pencil"></i></button> `;
+    if (can('bookings','delete')) actions += `<button class="btn btn-sm btn-outline-danger" onclick="deleteBooking(${b.id})"><i class="bi bi-trash"></i></button>`;
+    return `<tr><td>${guest?guest.name:'—'}${b.additionalGuests&&b.additionalGuests.length?` <span class="text-muted small">+${b.additionalGuests.length}</span>`:''}</td><td>${room?room.number:'—'}</td><td>${b.source}${b.sourceBookingId?' ('+b.sourceBookingId+')':''}</td>
+      <td>${b.checkIn}</td><td>${b.checkOut}</td><td><span class="status-pill ${b.status}">${b.status.replace('_',' ')}</span></td><td>${actions}</td></tr>`;
+  }).join('') || `<tr><td colspan="7" class="text-center text-muted py-3">No bookings for this range.</td></tr>`;
+}
+function checkIn(id) {
+  const b = DB.bookings.find(x => x.id === id);
+  b.status = 'checked_in'; b.actualCheckIn = new Date().toISOString();
+  DB.rooms.find(r => r.id === b.roomId).status = 'occupied';
+  saveDB(DB); renderBookings(); renderRooms();
+  showToast('Guest checked in.');
+}
+function checkOut(id) {
+  const b = DB.bookings.find(x => x.id === id);
+  b.status = 'checked_out'; b.actualCheckOut = new Date().toISOString();
+  DB.rooms.find(r => r.id === b.roomId).status = 'cleaning';
+  saveDB(DB); renderBookings(); renderRooms(); renderBillingQueue();
+  showToast('Checked out. Proceed to Billing.');
+}
+function cancelBooking(id) { DB.bookings.find(x => x.id === id).status = 'cancelled'; saveDB(DB); renderBookings(); showToast('Booking cancelled.'); }
+function deleteBooking(id) {
+  if (!can('bookings','delete')) { showToast('No permission to delete bookings.', true); return; }
+  if (!confirm('Permanently delete this booking record?')) return;
+  DB.bookings = DB.bookings.filter(b => b.id !== id);
+  DB.invoices = DB.invoices.filter(i => i.bookingId !== id);
+  DB.payments = DB.payments.filter(p => p.bookingId !== id);
+  saveDB(DB); renderBookings(); renderBillingQueue(); renderInvoiceList();
+  showToast('Booking deleted.');
+}
+function exportBookingsCSV() {
+  const list = getFilteredBookingsForDisplay();
+  const headers = ['Guest','Room','Source','Source Booking ID','Check-in','Check-out','Status','Advance','Advance Mode'];
+  const rows = list.map(b => { const g = DB.guests.find(x=>x.id===b.guestId), r = DB.rooms.find(x=>x.id===b.roomId);
+    return [g?g.name:'', r?r.number:'', b.source, b.sourceBookingId||'', b.checkIn, b.checkOut, b.status, b.advanceAmount||0, b.advancePaymentMode||'']; });
+  exportCSV('Bookings_Report', headers, rows);
+}
+function emailBookings() {
+  const list = getFilteredBookingsForDisplay();
+  const headers = ['Guest','Room','Source','Check-in','Check-out','Status'];
+  const rows = list.map(b => { const g = DB.guests.find(x=>x.id===b.guestId), r = DB.rooms.find(x=>x.id===b.roomId); return [g?g.name:'', r?r.number:'', b.source, b.checkIn, b.checkOut, b.status]; });
+  emailExport('Bookings Report', 'Bookings_Report', headers, rows);
+}
+
+/* ================= BILLING ================= */
+function renderBillingQueue() {
+  const pending = DB.bookings.filter(b => b.status === 'checked_out' && !DB.invoices.some(i => i.bookingId === b.id));
+  const box = document.getElementById('pendingQueue');
+  box.innerHTML = pending.length === 0 ? `<div class="text-muted small">No pending checkouts.</div>` :
+    pending.map(b => { const guest = DB.guests.find(g => g.id === b.guestId); const room = DB.rooms.find(r => r.id === b.roomId);
+      return `<div class="d-flex justify-content-between py-2 border-bottom" style="cursor:pointer;" onclick="openBillingFor(${b.id})">
+        <div><b>${guest.name}</b><br><span class="text-muted small">${room.number}</span></div><i class="bi bi-chevron-right"></i></div>`; }).join('');
+}
+function openBillingFor(bookingId) {
+  if (!can('billing','create')) { showToast('No permission to generate invoices.', true); return; }
+  currentBookingIdForBilling = bookingId;
+  window.currentFnbItems = []; window.currentOtherCharges = [];
+  const b = DB.bookings.find(x => x.id === bookingId);
+  const guest = DB.guests.find(g => g.id === b.guestId);
+  const room = DB.rooms.find(r => r.id === b.roomId);
+  const nights = Math.max(1, Math.round((new Date(b.checkOut) - new Date(b.checkIn)) / 86400000));
+  document.getElementById('billingPanel').innerHTML = `
+    <h5 class="fw-bold">${guest.name}</h5>
+    <div class="text-muted small mb-3">Room ${room.number} · ${nights} night(s) · GST: ${b.gstApplicable ? 'Applicable' : 'Not Applicable'}</div>
+    <div class="row g-2 mb-2">
+      <div class="col-md-6"><label class="form-label small">Laundry (₹)</label><input type="number" id="bl_laundry" value="0" class="form-control" oninput="recalcBill()"></div>
+      <div class="col-md-6"><label class="form-label small">Discount (₹)</label><input type="number" id="bl_discount" value="0" class="form-control" oninput="recalcBill()"></div>
+    </div>
+    <div class="border rounded-3 p-2 mb-3">
+      <label class="form-label small fw-bold">Food & Beverage</label>
+      <div class="row g-2 mb-2">
+        <div class="col-md-4"><input class="form-control form-control-sm" id="fnb_item" placeholder="Item description"></div>
+        <div class="col-md-3"><input type="number" class="form-control form-control-sm" id="fnb_amount" placeholder="Amount"></div>
+        <div class="col-md-4"><input class="form-control form-control-sm" id="fnb_note" placeholder="Internal note (not printed)"></div>
+        <div class="col-md-1"><button class="btn btn-sm btn-brand w-100" onclick="addFnbItem()"><i class="bi bi-plus"></i></button></div>
+      </div>
+      <div id="fnbList"></div>
+    </div>
+    <div class="border rounded-3 p-2 mb-3">
+      <label class="form-label small fw-bold">Other Charges</label>
+      <div class="row g-2 mb-2">
+        <div class="col-md-8"><input class="form-control form-control-sm" id="other_desc" placeholder="Description"></div>
+        <div class="col-md-3"><input type="number" class="form-control form-control-sm" id="other_amount" placeholder="Amount"></div>
+        <div class="col-md-1"><button class="btn btn-sm btn-brand w-100" onclick="addOtherCharge()"><i class="bi bi-plus"></i></button></div>
+      </div>
+      <div id="otherList"></div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label small">Payment Mode (final settlement)</label>
+      <select id="bl_paymentmode" class="form-select form-select-sm" style="max-width:200px;"><option>Cash</option><option>UPI</option><option>Net Banking</option><option>Card</option></select>
+    </div>
+    <div id="billBreakdown"></div>
+    <button class="btn-brand mt-2" onclick="generateInvoice(${bookingId}, ${nights}, ${room.rate})"><i class="bi bi-receipt"></i> Generate Invoice</button>
+  `;
+  window.currentNights = nights; window.currentRate = room.rate;
+  renderFnbList(); renderOtherList();
+  recalcBill();
+}
+function addFnbItem() {
+  const item = document.getElementById('fnb_item').value.trim();
+  const amount = parseFloat(document.getElementById('fnb_amount').value) || 0;
+  const note = document.getElementById('fnb_note').value.trim();
+  if (!item || amount <= 0) { showToast('Enter item description and a valid amount.', true); return; }
+  window.currentFnbItems.push({ item, amount, note });
+  document.getElementById('fnb_item').value = ''; document.getElementById('fnb_amount').value = ''; document.getElementById('fnb_note').value = '';
+  renderFnbList(); recalcBill();
+}
+function removeFnbItem(idx) { window.currentFnbItems.splice(idx,1); renderFnbList(); recalcBill(); }
+function renderFnbList() {
+  document.getElementById('fnbList').innerHTML = window.currentFnbItems.map((f,i) => `
+    <div class="fnb-row"><span>${f.item}${f.note?` <span class="note">(internal: ${f.note})</span>`:''}</span>
+    <span>₹${f.amount.toFixed(2)} <i class="bi bi-x-circle text-danger" style="cursor:pointer" onclick="removeFnbItem(${i})"></i></span></div>`).join('') || '<div class="text-muted small">No F&B items added yet.</div>';
+}
+function addOtherCharge() {
+  const desc = document.getElementById('other_desc').value.trim();
+  const amount = parseFloat(document.getElementById('other_amount').value) || 0;
+  if (!desc || amount <= 0) { showToast('Enter description and a valid amount.', true); return; }
+  window.currentOtherCharges.push({ desc, amount });
+  document.getElementById('other_desc').value = ''; document.getElementById('other_amount').value = '';
+  renderOtherList(); recalcBill();
+}
+function removeOtherCharge(idx) { window.currentOtherCharges.splice(idx,1); renderOtherList(); recalcBill(); }
+function renderOtherList() {
+  document.getElementById('otherList').innerHTML = window.currentOtherCharges.map((o,i) => `
+    <div class="fnb-row"><span>${o.desc}</span><span>₹${o.amount.toFixed(2)} <i class="bi bi-x-circle text-danger" style="cursor:pointer" onclick="removeOtherCharge(${i})"></i></span></div>`).join('') || '<div class="text-muted small">No other charges added.</div>';
+}
+function recalcBill() {
+  const laundry = parseFloat(document.getElementById('bl_laundry').value||0);
+  const discount = parseFloat(document.getElementById('bl_discount').value||0);
+  const fnbTotal = window.currentFnbItems.reduce((s,f)=>s+f.amount,0);
+  const otherTotal = window.currentOtherCharges.reduce((s,o)=>s+o.amount,0);
+  const b = DB.bookings.find(x => x.id === currentBookingIdForBilling);
+  const guest = DB.guests.find(g => g.id === b.guestId);
+  const extraCharges = (b.extraPersonCharge||0) + (b.earlyMorningCharge||0);
+  const roomCharges = window.currentNights * window.currentRate;
+  const subtotal = roomCharges + extraCharges + fnbTotal + laundry + otherTotal;
+  const taxable = Math.max(0, subtotal - discount);
+  const gstApplicable = b.gstApplicable !== false;
+  const totalTax = gstApplicable ? +(taxable * 0.12).toFixed(2) : 0;
+  const total = +(taxable + totalTax).toFixed(2);
+  const isIntraState = !guest.state || guest.state.trim().toLowerCase() === 'karnataka';
+  const advancePaid = b.advanceAmount || 0;
+  window.currentBalanceDue = Math.max(0, total - advancePaid);
+  document.getElementById('billBreakdown').innerHTML = `
+    <div class="bill-row"><span>Room Charges (${window.currentNights} nights)</span><span>₹${roomCharges.toFixed(2)}</span></div>
+    ${extraCharges>0?`<div class="bill-row"><span>Extra Person / Early Morning Charges</span><span>₹${extraCharges.toFixed(2)}</span></div>`:''}
+    ${fnbTotal>0?`<div class="bill-row"><span>Food & Beverage</span><span>₹${fnbTotal.toFixed(2)}</span></div>`:''}
+    ${laundry>0?`<div class="bill-row"><span>Laundry</span><span>₹${laundry.toFixed(2)}</span></div>`:''}
+    ${otherTotal>0?`<div class="bill-row"><span>Other Charges</span><span>₹${otherTotal.toFixed(2)}</span></div>`:''}
+    ${discount>0?`<div class="bill-row"><span>Discount</span><span>-₹${discount.toFixed(2)}</span></div>`:''}
+    <div class="bill-row"><span>Taxable Value</span><span>₹${taxable.toFixed(2)}</span></div>
+    ${gstApplicable ? (isIntraState ? `
+      <div class="bill-row"><span>CGST (6%)</span><span>₹${(totalTax/2).toFixed(2)}</span></div>
+      <div class="bill-row"><span>SGST (6%)</span><span>₹${(totalTax/2).toFixed(2)}</span></div>` :
+      `<div class="bill-row"><span>IGST (12%)</span><span>₹${totalTax.toFixed(2)}</span></div>`) :
+      `<div class="bill-row"><span>GST</span><span>Not Applicable</span></div>`}
+    <div class="bill-row"><span>Advance Paid</span><span>₹${advancePaid.toFixed(2)}</span></div>
+    <div class="bill-row total"><span>Amount Due</span><span>₹${window.currentBalanceDue.toFixed(2)}</span></div>
+  `;
+  renderPaymentCollectionPanel('billingPanel', 'BOOKING_'+b.id, guest.name, guest.mobile, window.currentBalanceDue);
+}
+function generateInvoice(bookingId, nights, rate) {
+  const laundry = parseFloat(document.getElementById('bl_laundry').value||0);
+  const discount = parseFloat(document.getElementById('bl_discount').value||0);
+  const fnbTotal = window.currentFnbItems.reduce((s,f)=>s+f.amount,0);
+  const otherTotal = window.currentOtherCharges.reduce((s,o)=>s+o.amount,0);
+  const paymentMode = document.getElementById('bl_paymentmode').value;
+  const b = DB.bookings.find(x => x.id === bookingId);
+  const guest = DB.guests.find(g => g.id === b.guestId);
+  const room = DB.rooms.find(r => r.id === b.roomId);
+  const extraCharges = (b.extraPersonCharge||0) + (b.earlyMorningCharge||0);
+  const roomCharges = nights * rate;
+  const taxable = Math.max(0, roomCharges + extraCharges + fnbTotal + laundry + otherTotal - discount);
+  const gstApplicable = b.gstApplicable !== false;
+  const totalTax = gstApplicable ? +(taxable * 0.12).toFixed(2) : 0;
+  const total = +(taxable + totalTax).toFixed(2);
+  const isIntraState = !guest.state || guest.state.trim().toLowerCase() === 'karnataka';
+  const advancePaid = b.advanceAmount || 0;
+  const dueNow = Math.max(0, total - advancePaid);
+  const invoice = {
+    id: DB.nextId.invoice++, bookingId, invoiceNumber: `INV/${new Date().getFullYear()}/${String(DB.nextId.invoice).padStart(5,'0')}`,
+    date: new Date().toISOString().slice(0,10), guestName: guest.name, guestAddress: guest.address||'', roomNumber: room.number,
+    checkIn: b.checkIn, checkOut: b.checkOut, nights,
+    roomCharges, extraCharges, laundry, discount,
+    fnbItems: [...window.currentFnbItems], otherCharges: [...window.currentOtherCharges],
+    taxable,
+    cgst: gstApplicable && isIntraState ? totalTax/2 : 0, sgst: gstApplicable && isIntraState ? totalTax/2 : 0,
+    igst: gstApplicable && !isIntraState ? totalTax : 0,
+    total, advancePaid, paymentMode, guestGSTIN: guest.gstin || '', outstanding: 0
+  };
+  DB.invoices.push(invoice);
+  DB.payments.push({ id: Date.now(), bookingId, type: 'final', mode: paymentMode, amount: dueNow, date: invoice.date });
+  window.currentFnbItems = []; window.currentOtherCharges = [];
+  saveDB(DB); renderBillingQueue(); renderDashboard(); renderInvoiceList();
+  document.getElementById('billingPanel').innerHTML = `
+    <div class="text-center py-4">
+      <i class="bi bi-check-circle text-success" style="font-size:44px;"></i>
+      <h5 class="mt-3">Invoice ${invoice.invoiceNumber} generated</h5>
+      <p class="text-muted">Total: ₹${invoice.total.toFixed(2)} · Paid via ${paymentMode}</p>
+      <button class="btn-brand" onclick="printInvoice(${invoice.id})"><i class="bi bi-printer"></i> Print Invoice</button>
+    </div>`;
+  showToast('Invoice generated.');
+}
+function printInvoice(invoiceId) {
+  const inv = DB.invoices.find(i => i.id === invoiceId);
+  const hotelName = DB.settings.legalName || 'Your Hotel';
+  document.getElementById('invoicePrint').innerHTML = `
+    <div class="inv-header">
+      <div><h3 class="mb-0">${hotelName}</h3><div>GSTIN: [Enter Hotel GSTIN]</div></div>
+      <div class="text-end"><div class="inv-title">TAX INVOICE</div><div>Invoice No: <b>${inv.invoiceNumber}</b></div><div>Date: ${inv.date}</div><div>Payment Mode: ${inv.paymentMode}</div></div>
+    </div>
+    <table class="inv-table mb-3">
+      <tr><td width="50%"><b>Billed To</b><br>${inv.guestName}<br>${inv.guestAddress||''}${inv.guestGSTIN?('<br>GSTIN: '+inv.guestGSTIN):''}</td>
+      <td width="50%"><b>Stay Details</b><br>Room: ${inv.roomNumber}<br>Check-in: ${inv.checkIn}<br>Check-out: ${inv.checkOut}<br>Nights: ${inv.nights}</td></tr>
+    </table>
+    <table class="inv-table">
+      <thead><tr><th>Description</th><th style="text-align:right;">Amount (₹)</th></tr></thead>
+      <tbody>
+        <tr><td>Room Charges (${inv.nights} nights)</td><td style="text-align:right;">${inv.roomCharges.toFixed(2)}</td></tr>
+        ${inv.extraCharges>0?`<tr><td>Extra Person / Early Morning Charges</td><td style="text-align:right;">${inv.extraCharges.toFixed(2)}</td></tr>`:''}
+        ${inv.fnbItems && inv.fnbItems.length ? inv.fnbItems.map(f=>`<tr><td>F&amp;B — ${f.item}</td><td style="text-align:right;">${f.amount.toFixed(2)}</td></tr>`).join('') : ''}
+        ${inv.laundry>0?`<tr><td>Laundry</td><td style="text-align:right;">${inv.laundry.toFixed(2)}</td></tr>`:''}
+        ${inv.otherCharges && inv.otherCharges.length ? inv.otherCharges.map(o=>`<tr><td>${o.desc}</td><td style="text-align:right;">${o.amount.toFixed(2)}</td></tr>`).join('') : ''}
+        ${inv.discount>0?`<tr><td>Discount</td><td style="text-align:right;">-${inv.discount.toFixed(2)}</td></tr>`:''}
+        <tr><td><b>Taxable Value</b></td><td style="text-align:right;"><b>${inv.taxable.toFixed(2)}</b></td></tr>
+        ${inv.igst>0?`<tr><td>IGST</td><td style="text-align:right;">${inv.igst.toFixed(2)}</td></tr>`:(inv.cgst>0?`<tr><td>CGST</td><td style="text-align:right;">${inv.cgst.toFixed(2)}</td></tr><tr><td>SGST</td><td style="text-align:right;">${inv.sgst.toFixed(2)}</td></tr>`:`<tr><td>GST</td><td style="text-align:right;">Not Applicable</td></tr>`)}
+        <tr><td>Advance Paid</td><td style="text-align:right;">${inv.advancePaid.toFixed(2)}</td></tr>
+        <tr style="background:#f0f4fc;"><td><b>Total Amount</b></td><td style="text-align:right;"><b>${inv.total.toFixed(2)}</b></td></tr>
+        <tr style="background:#f0f4fc;"><td><b>Balance Due</b></td><td style="text-align:right;"><b>${Math.max(0,inv.total-inv.advancePaid).toFixed(2)}</b></td></tr>
+      </tbody>
+    </table>
+    <div class="sign-box"><div>For ${hotelName}</div><div class="sign-line">Authorized Signatory</div></div>
+    <div style="font-size:11px; color:#6b7684; margin-top:20px;">This is a computer-generated invoice. Thank you for staying with us.</div>
+  `;
+  window.print();
+}
+function getFilteredInvoicesForDisplay() { return DB.invoices.filter(i => (!invoiceDateFilter.start || i.date >= invoiceDateFilter.start) && (!invoiceDateFilter.end || i.date <= invoiceDateFilter.end)); }
+function renderInvoiceList() {
+  invoiceDateFilter.start = document.getElementById('inv_filter_start').value;
+  invoiceDateFilter.end = document.getElementById('inv_filter_end').value;
+  const list = getFilteredInvoicesForDisplay();
+  document.getElementById('invoiceTableBody').innerHTML = list.slice().reverse().map(i => `
+    <tr><td>${i.invoiceNumber}</td><td>${i.guestName}</td><td>${i.date}</td><td>${i.paymentMode}</td><td>₹${i.total.toFixed(2)}</td>
+    <td><button class="btn btn-sm btn-outline-secondary" onclick="printInvoice(${i.id})"><i class="bi bi-printer"></i></button></td></tr>`).join('') || `<tr><td colspan="6" class="text-center text-muted py-3">No invoices for this range.</td></tr>`;
+}
+function clearInvoiceFilter() { document.getElementById('inv_filter_start').value = ''; document.getElementById('inv_filter_end').value = ''; renderInvoiceList(); }
+function exportInvoicesCSV() {
+  const list = getFilteredInvoicesForDisplay();
+  const headers = ['Invoice','Guest','Date','Payment Mode','Taxable','CGST','SGST','IGST','Total','GSTIN'];
+  const rows = list.map(i => [i.invoiceNumber, i.guestName, i.date, i.paymentMode, i.taxable, i.cgst, i.sgst, i.igst, i.total, i.guestGSTIN||'']);
+  exportCSV('Invoices_Report', headers, rows);
+}
+function emailInvoices() {
+  const list = getFilteredInvoicesForDisplay();
+  const headers = ['Invoice','Guest','Date','Payment Mode','Total'];
+  const rows = list.map(i => [i.invoiceNumber, i.guestName, i.date, i.paymentMode, i.total]);
+  emailExport('Invoices Report', 'Invoices_Report', headers, rows);
+}
+
+/* ================= REPORTS (+ Expense Reports + Financial Reports) ================= */
+const REPORT_VIEWS = {
+  revenue: [ ['overview','Overview (daily totals)'], ['detailed','Detailed breakdown'], ['by_mode','By Payment Mode'] ],
+  gst: [ ['summary','Summary (Totals)'], ['split','Registered vs Unregistered'], ['partywise','Registered — Client-wise (Partywise)'] ],
+};
+function toggleReportViewOptions() {
+  const cat = document.getElementById('rpt_category').value;
+  const viewBox = document.getElementById('rpt_view_box'), viewSelect = document.getElementById('rpt_view');
+  if (REPORT_VIEWS[cat]) { viewBox.style.display = 'flex'; viewSelect.innerHTML = REPORT_VIEWS[cat].map(([v,l]) => `<option value="${v}">${l}</option>`).join(''); }
+  else { viewBox.style.display = 'none'; viewSelect.innerHTML = ''; }
+  document.getElementById('rpt_email_btn').style.display = cat === 'police' ? 'none' : 'inline-block';
+  renderReport();
+}
+function toggleReportRangeInputs() {
+  const type = document.getElementById('rpt_range_type').value;
+  document.getElementById('rpt_month_box').style.display = type === 'month' ? 'flex' : 'none';
+  document.getElementById('rpt_custom_start_box').style.display = type === 'custom' ? 'flex' : 'none';
+  document.getElementById('rpt_custom_end_box').style.display = type === 'custom' ? 'flex' : 'none';
+}
+function inReportRange(dateStr) {
+  const type = document.getElementById('rpt_range_type').value;
+  if (type === 'all') return true;
+  if (type === 'month') { const m = document.getElementById('rpt_month').value; return m ? dateStr.slice(0,7) === m : true; }
+  if (type === 'custom') { const s = document.getElementById('rpt_start').value, e = document.getElementById('rpt_end').value; return (!s || dateStr >= s) && (!e || dateStr <= e); }
+  return true;
+}
+function getFilteredInvoicesForReport() { return DB.invoices.filter(i => inReportRange(i.date)); }
+function getFilteredBookingsForReport() { return DB.bookings.filter(b => inReportRange(b.checkIn)); }
+function getFilteredPaymentsForReport() { return DB.payments.filter(p => inReportRange(p.date)); }
+function getFilteredExpensesForReport() { const org = getOrg(); return org.expenses.filter(e => inReportRange(e.date)); }
+
+function renderReport() {
+  const cat = document.getElementById('rpt_category').value;
+  const view = document.getElementById('rpt_view').value;
+  const out = document.getElementById('reportOutput');
+  let headers = [], rows = [];
+
+  if (cat === 'revenue') {
+    const invs = getFilteredInvoicesForReport();
+    if (view === 'overview') {
+      const byDate = {}; invs.forEach(i => { byDate[i.date] = (byDate[i.date]||0) + i.total; });
+      headers = ['Date','Revenue']; rows = Object.entries(byDate).map(([d,v]) => [d, v.toFixed(2)]);
+    } else if (view === 'by_mode') {
+      const pays = getFilteredPaymentsForReport(); const byMode = {};
+      pays.forEach(p => { byMode[p.mode] = (byMode[p.mode]||0) + p.amount; });
+      headers = ['Payment Mode','Total Collected']; rows = Object.entries(byMode).map(([m,v]) => [m, v.toFixed(2)]);
+    } else {
+      const byDate = {};
+      invs.forEach(i => {
+        if (!byDate[i.date]) byDate[i.date] = { room:0, fnb:0, laundry:0, other:0, extra:0, discount:0, taxable:0, gst:0, total:0, count:0 };
+        const fnbTotal = (i.fnbItems||[]).reduce((s,f)=>s+f.amount,0);
+        const otherTotal = (i.otherCharges||[]).reduce((s,o)=>s+o.amount,0);
+        byDate[i.date].room += i.roomCharges; byDate[i.date].fnb += fnbTotal; byDate[i.date].laundry += i.laundry||0; byDate[i.date].other += otherTotal;
+        byDate[i.date].extra += i.extraCharges||0; byDate[i.date].discount += i.discount||0; byDate[i.date].taxable += i.taxable;
+        byDate[i.date].gst += (i.cgst+i.sgst+i.igst); byDate[i.date].total += i.total; byDate[i.date].count += 1;
+      });
+      headers = ['Date','Invoices','Room Revenue','F&B Revenue','Laundry','Other Charges','Extra Charges','Discount','Taxable Value','GST','Total Revenue'];
+      rows = Object.entries(byDate).map(([d,v]) => [d, v.count, v.room.toFixed(2), v.fnb.toFixed(2), v.laundry.toFixed(2), v.other.toFixed(2), v.extra.toFixed(2), v.discount.toFixed(2), v.taxable.toFixed(2), v.gst.toFixed(2), v.total.toFixed(2)]);
+    }
+  } else if (cat === 'gst') {
+    const invs = getFilteredInvoicesForReport();
+    if (view === 'summary') {
+      const totalCgst = invs.reduce((s,i)=>s+i.cgst,0), totalSgst = invs.reduce((s,i)=>s+i.sgst,0), totalIgst = invs.reduce((s,i)=>s+i.igst,0);
+      headers = ['Tax Type','Amount']; rows = [['CGST', totalCgst.toFixed(2)], ['SGST', totalSgst.toFixed(2)], ['IGST', totalIgst.toFixed(2)]];
+    } else if (view === 'split') {
+      const registered = invs.filter(i => i.guestGSTIN), unregistered = invs.filter(i => !i.guestGSTIN);
+      const sum = (arr, key) => arr.reduce((s,i)=>s+i[key],0);
+      headers = ['Category','Invoices','Taxable Value','CGST','SGST','IGST','Total'];
+      rows = [
+        ['Registered (with GSTIN)', registered.length, sum(registered,'taxable').toFixed(2), sum(registered,'cgst').toFixed(2), sum(registered,'sgst').toFixed(2), sum(registered,'igst').toFixed(2), sum(registered,'total').toFixed(2)],
+        ['Unregistered', unregistered.length, sum(unregistered,'taxable').toFixed(2), sum(unregistered,'cgst').toFixed(2), sum(unregistered,'sgst').toFixed(2), sum(unregistered,'igst').toFixed(2), sum(unregistered,'total').toFixed(2)],
+      ];
+    } else {
+      const registered = invs.filter(i => i.guestGSTIN); const byClient = {};
+      registered.forEach(i => {
+        const key = i.guestGSTIN + '|' + i.guestName;
+        if (!byClient[key]) byClient[key] = { name:i.guestName, gstin:i.guestGSTIN, invoices:0, taxable:0, cgst:0, sgst:0, igst:0, total:0 };
+        byClient[key].invoices += 1; byClient[key].taxable += i.taxable; byClient[key].cgst += i.cgst; byClient[key].sgst += i.sgst; byClient[key].igst += i.igst; byClient[key].total += i.total;
+      });
+      headers = ['Guest / Client','GSTIN','Invoices','Taxable Value','CGST','SGST','IGST','Total'];
+      rows = Object.values(byClient).sort((a,b)=>b.total-a.total).map(c => [c.name, c.gstin, c.invoices, c.taxable.toFixed(2), c.cgst.toFixed(2), c.sgst.toFixed(2), c.igst.toFixed(2), c.total.toFixed(2)]);
+    }
+  } else if (cat === 'source') {
+    const bks = getFilteredBookingsForReport(); const counts = {};
+    bks.forEach(b => { counts[b.source] = (counts[b.source]||0)+1; });
+    headers = ['Source','Bookings']; rows = Object.entries(counts).map(([s,c]) => [s, c]);
+  } else if (cat === 'outstanding') {
+    const invs = getFilteredInvoicesForReport().filter(i => i.outstanding > 0);
+    headers = ['Invoice','Guest','Outstanding']; rows = invs.map(i => [i.invoiceNumber, i.guestName, i.outstanding.toFixed(2)]);
+  } else if (cat === 'police') {
+    const bks = getFilteredBookingsForReport();
+    headers = ['Guest Name','ID Type','ID Number','Mobile','Address','City','State','Room','Check-in','Check-out','Actual Check-in','Actual Check-out'];
+    rows = [];
+    bks.forEach(b => {
+      const g = DB.guests.find(x => x.id === b.guestId);
+      const room = DB.rooms.find(r => r.id === b.roomId);
+      if (g) rows.push([g.name, g.idType, g.idNum, g.mobile, g.address||'', g.city||'', g.state||'', room?room.number:'', b.checkIn, b.checkOut, b.actualCheckIn?new Date(b.actualCheckIn).toLocaleString('en-IN'):'', b.actualCheckOut?new Date(b.actualCheckOut).toLocaleString('en-IN'):'']);
+      (b.additionalGuests||[]).forEach(ag => { rows.push([ag.name, '—', ag.idNum||'', '—', ag.address||'', '—', '—', room?room.number:'', b.checkIn, b.checkOut, '', '']); });
+    });
+  } else if (cat === 'tally') {
+    const invs = getFilteredInvoicesForReport();
+    headers = ['Date','Voucher Type','Voucher No','Party Ledger','GSTIN','Sales Ledger (Cr)','CGST Ledger (Cr)','SGST Ledger (Cr)','IGST Ledger (Cr)','Total (Dr)','Narration'];
+    rows = invs.map(i => [i.date, 'Sales', i.invoiceNumber, i.guestName, i.guestGSTIN || 'Unregistered', i.taxable.toFixed(2), i.cgst.toFixed(2), i.sgst.toFixed(2), i.igst.toFixed(2), i.total.toFixed(2), `Room ${i.roomNumber} stay ${i.checkIn} to ${i.checkOut}`]);
+  } else if (cat === 'expense_summary') {
+    const list = getFilteredExpensesForReport();
+    const total = list.reduce((s,e)=>s+e.total,0);
+    const pending = list.filter(e=>e.status==='Pending Approval').length;
+    const approved = list.filter(e=>e.status==='Approved').length;
+    const rejected = list.filter(e=>e.status==='Rejected').length;
+    const paidList = list.filter(e=>e.status==='Paid');
+    const paidTotal = paidList.reduce((s,e)=>s+(e.paidAmount||e.total),0);
+    const outstanding = list.filter(e=>e.status==='Approved').reduce((s,e)=>s+e.total,0);
+    const cgst = list.reduce((s,e)=>s+e.cgst,0), sgst = list.reduce((s,e)=>s+e.sgst,0), igst = list.reduce((s,e)=>s+e.igst,0);
+    headers = ['Metric','Value'];
+    rows = [
+      ['Total Expenses', total.toFixed(2)], ['Total Transactions', list.length],
+      ['Pending Approval', pending], ['Approved', approved], ['Rejected', rejected], ['Paid', paidList.length],
+      ['Paid Amount', paidTotal.toFixed(2)], ['Outstanding (Approved, unpaid)', outstanding.toFixed(2)],
+      ['Total GST', (cgst+sgst+igst).toFixed(2)], ['CGST', cgst.toFixed(2)], ['SGST', sgst.toFixed(2)], ['IGST', igst.toFixed(2)],
+    ];
+  } else if (cat === 'expense_vendorwise') {
+    const list = getFilteredExpensesForReport();
+    const byVendor = {};
+    list.forEach(e => {
+      if (!byVendor[e.vendorId]) byVendor[e.vendorId] = { name: e.vendorName, count:0, total:0, gst:0, paid:0, outstanding:0, lastDate:'' };
+      const v = byVendor[e.vendorId];
+      v.count++; v.total += e.total; v.gst += (e.cgst+e.sgst+e.igst);
+      if (e.status === 'Paid') v.paid += (e.paidAmount||e.total);
+      if (e.status === 'Approved') v.outstanding += e.total;
+      if (!v.lastDate || e.date > v.lastDate) v.lastDate = e.date;
+    });
+    headers = ['Vendor','Expenses','Total Amount','GST','Paid','Outstanding','Last Expense Date'];
+    rows = Object.values(byVendor).map(v => [v.name, v.count, v.total.toFixed(2), v.gst.toFixed(2), v.paid.toFixed(2), v.outstanding.toFixed(2), v.lastDate]);
+  } else if (cat === 'cashflow') {
+    const org = getOrg();
+    const invs = getFilteredInvoicesForReport();
+    const dates = [...new Set([...invs.map(i=>i.date), ...org.expenses.filter(e=>e.status==='Paid').map(e=>e.paymentDate)])].filter(d=>inReportRange(d)).sort();
+    let running = 0;
+    headers = ['Date','Cash In (Revenue)','Cash Out (Expenses Paid)','Net Cash Flow','Running Balance'];
+    rows = dates.map(d => {
+      const cashIn = invs.filter(i=>i.date===d).reduce((s,i)=>s+i.total,0);
+      const cashOut = org.expenses.filter(e=>e.status==='Paid' && e.paymentDate===d).reduce((s,e)=>s+(e.paidAmount||e.total),0);
+      const net = cashIn - cashOut; running += net;
+      return [d, cashIn.toFixed(2), cashOut.toFixed(2), net.toFixed(2), running.toFixed(2)];
+    });
+  } else if (cat === 'pnl') {
+    const invs = getFilteredInvoicesForReport();
+    const expenses = getFilteredExpensesForReport().filter(e => e.status !== 'Rejected' && e.status !== 'Draft');
+    const roomRev = invs.reduce((s,i)=>s+i.roomCharges,0);
+    const fnbRev = invs.reduce((s,i)=>s+(i.fnbItems||[]).reduce((a,f)=>a+f.amount,0),0);
+    const laundryRev = invs.reduce((s,i)=>s+i.laundry,0);
+    const otherRev = invs.reduce((s,i)=>s+(i.otherCharges||[]).reduce((a,o)=>a+o.amount,0)+i.extraCharges,0);
+    const totalRevenue = roomRev + fnbRev + laundryRev + otherRev;
+    const expByCat = {};
+    expenses.forEach(e => { expByCat[e.category] = (expByCat[e.category]||0) + e.amount; });
+    const totalExpense = Object.values(expByCat).reduce((s,v)=>s+v,0);
+    const netProfit = totalRevenue - totalExpense;
+    headers = ['Line Item','Amount (₹, excl. GST)'];
+    rows = [
+      ['Room Revenue', roomRev.toFixed(2)], ['F&B Revenue', fnbRev.toFixed(2)], ['Laundry Revenue', laundryRev.toFixed(2)], ['Other/Extra Revenue', otherRev.toFixed(2)],
+      ['Total Revenue', totalRevenue.toFixed(2)],
+      ...Object.entries(expByCat).map(([cat,amt]) => [`Expense — ${cat}`, amt.toFixed(2)]),
+      ['Total Expenses', totalExpense.toFixed(2)],
+      [netProfit >= 0 ? 'Net Profit' : 'Net Loss', Math.abs(netProfit).toFixed(2)],
+    ];
+  }
+
+  lastReportHeaders = headers; lastReportRows = rows;
+  out.innerHTML = rows.length ? `<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table>` : `<div class="text-muted py-3 text-center">No data for the selected period.</div>`;
+}
+function exportCurrentReportCSV() {
+  if (!can('reports','view')) { showToast('No permission to export reports.', true); return; }
+  if (!lastReportRows.length) { showToast('No report data to export.', true); return; }
+  exportCSV(document.getElementById('rpt_category').value + '_report', lastReportHeaders, lastReportRows);
+}
+function emailCurrentReport() {
+  const cat = document.getElementById('rpt_category').value;
+  if (cat === 'police') { showToast('Police reports are export-only (CSV), by design.', true); return; }
+  if (!lastReportRows.length) { showToast('No report data to export.', true); return; }
+  emailExport('Report', cat + '_report', lastReportHeaders, lastReportRows);
+}
+</script>
+</body>
+</html>
