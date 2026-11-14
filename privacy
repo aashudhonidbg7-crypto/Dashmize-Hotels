@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy | DashMize</title>
+  <style>
+    body{font-family:Arial,sans-serif;color:#253248;line-height:1.75;margin:0;background:#f7f9fc}
+    main{max-width:850px;margin:45px auto;padding:35px;background:#fff;border-radius:12px}
+    h1,h2{color:#142b49}h2{margin-top:30px}
+    a{color:#1769d2}
+    .notice{background:#fff4db;padding:12px;border-radius:8px}
+    @media(max-width:600px){main{margin:12px;padding:22px}}
+  </style>
+</head>
+<body>
+<main>
+  <a href="./index.html">← Back to Login</a>
+  <h1>DashMize Privacy Policy</h1>
+  <p class="notice"><strong>UAT Draft:</strong> This policy is a placeholder. It must be completed to reflect actual data processing practices before collecting real customer data.</p>
+
+  <h2>1. Information Collected</h2>
+  <p>The registration system may collect a user's name, hotel name, email address, mobile number and authentication-related information.</p>
+
+  <h2>2. Purpose of Processing</h2>
+  <p>Information is intended to support account registration, authentication, security, password recovery and operation of the Hotel ERP platform.</p>
+
+  <h2>3. Authentication Services</h2>
+  <p>DashMize UAT uses Supabase authentication. Email, SMS and Google authentication services may process information necessary to deliver their respective functions.</p>
+
+  <h2>4. Data Security</h2>
+  <p>Appropriate technical and organizational safeguards should be implemented to protect account information. No online service can guarantee absolute security.</p>
+
+  <h2>5. Cookies and Sessions</h2>
+  <p>The platform may use browser storage or similar technologies to maintain authenticated sessions and support essential application functions.</p>
+
+  <h2>6. Retention</h2>
+  <p>Specific retention periods and deletion procedures must be established before the commercial launch.</p>
+
+  <h2>7. User Requests</h2>
+  <p>Procedures for accessing, correcting or requesting deletion of personal information will be finalized before production use.</p>
+
+  <h2>8. Policy Updates</h2>
+  <p>This draft may be revised as the platform and its data processing practices develop.</p>
+
+  <h2>9. Contact</h2>
+  <p>Official privacy contact details will be added after confirmation by DashMize LLP.</p>
+</main>
+</body>
+</html>
