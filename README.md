@@ -1,0 +1,9 @@
+# DashMize UAT Auth — Reviewed Frontend
+
+Place index.html, app.js, style.css, config.js, terms.html and privacy.html together in your UAT GitHub Pages folder. Copy config.example.js to config.js and enter only UAT Supabase URL and public anon/publishable key. Never commit a service-role key or Twilio token.
+
+Supabase requirements: Email Confirm enabled; Email signup template must use {{ .Token }} for 6-digit signup verification; email magic-link OTP template must use {{ .Token }}; configure custom SMTP for real emails. Enable Phone and SMS provider for mobile; configure Google OAuth and redirect URL in Supabase and Google Cloud; add the UAT site URL and allowed redirect URL in Supabase. Phone must be linked to existing account using authenticated updateUser then phone_change OTP. Test phone numbers work only when Supabase test setup is configured.
+
+**Important design choice**: Login is OTP-only (email or phone); password is collected at signup and can be reset. This is NOT password + OTP MFA. Server-side ERP authorization, roles, RLS and route guards are still required; the frontend alone does not protect the ERP. Google OAuth sign-in may create an account automatically; disable Google until account provisioning/approval policy is established if needed.
+
+**UAT limitation**: Signup phone linking is prompted only immediately after email signup if session exists and pending state is retained. This state is lost after signup sign-out; user can link phone after login only when pending number is available in current browser session. Production requires a server-side verified profile workflow and a user-controlled phone-link screen. Supabase signUp can obfuscate already-registered users. No provider delivery can be verified offline. Terms/Privacy are PLACEHOLDERS and must be replaced before real user data collection.
